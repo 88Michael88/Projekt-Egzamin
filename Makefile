@@ -1,49 +1,42 @@
+# Compiler
 CC = gcc
-CFLAGS = -Wall -g
+
+# Compiler flags
+CFLAGS = -Wall -Wextra -std=c99 -I.
+
+# Source files
+SRCS = dziekan.c komisja.c student.c uczen.c sharedMemory.c semaphore.c
+
+# Header files
+HEADERS = const.h semaphore.h sharedMemory.h semaphore.h
 
 # Object files
-OBJS = dziekan.o student.o komisja.o uczen.o
+OBJS = dziekan.o komisja.o student.o uczen.o sharedMemory.o semaphore.o
 
 # Targets
-all: dziekan_executable student_executable komisja_executable uczen_executable
+all: dziekan komisja student uczen
 
-dziekan_executable: dziekan.o 
-	$(CC) dziekan.o -o $@
+# Compile dziekan
+dziekan: dziekan.o sharedMemory.o semaphore.o 
+	$(CC) $(CFLAGS) -o $@ dziekan.o sharedMemory.o semaphore.o
 
-student_executable: student.o
-	$(CC) student.o -o $@
+# Compile komisja
+komisja: komisja.o sharedMemory.o semaphore.o
+	$(CC) $(CFLAGS) -o $@ komisja.o sharedMemory.o semaphore.o
 
-komisja_executable: komisja.o
-	$(CC) komisja.o -o $@
+# Compile student
+student: student.o sharedMemory.o semaphore.o
+	$(CC) $(CFLAGS) -o $@ student.o sharedMemory.o semaphore.o
 
-uczen_executable: uczen.o
-	$(CC) uczen.o -o $@
+# Compile uczen
+uczen: uczen.o sharedMemory.o semaphore.o
+	$(CC) $(CFLAGS) -o $@ uczen.o sharedMemory.o semaphore.o
 
-dziekan.o: dziekan.c
-	$(CC) $(CFLAGS) -c dziekan.c -o $@
+# Pattern rule for creating object files from .c files
+%.o: %.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-student.o: student.c
-	$(CC) $(CFLAGS) -c student.c -o $@
-
-komisja.o: komisja.c
-	$(CC) $(CFLAGS) -c komisja.c -o $@
-
-uczen.o: uczen.c
-	$(CC) $(CFLAGS) -c uczen.c -o $@
-
-# Generating assembly files
-%.s: %.c $(HEADERS)
-	$(CC) $(CFLAGS) -S $< -o $@
-
-# Target to produce all assembly files
-assembly: $(SRC:.c=.s)
-
-# Clean up build artifacts
+# Clean up build files
 clean:
-	rm -f dziekan.o student.o komisja.o uczen.o ./dziekan_executable ./student_executable ./komisja_executable ./uczen_executable
-
-
-# Phony targets
-.PHONY: all clean
-
+	rm -f $(OBJS) dziekan komisja student uczen
 

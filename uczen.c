@@ -10,6 +10,8 @@ int main() {
     int kierunek = rand() % 4 + 5;
 
     printf("%d, Studiuje na wydziale %d i na kieruneku %d\n", getpid(), wydzial, kierunek);
+
+
     
     return 0;
 }

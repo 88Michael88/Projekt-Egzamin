@@ -17,7 +17,7 @@ int main() {
             default:
                 break;
             case 0:
-                execlp("./uczen_executable", "./uczen_executable", NULL);
+                execlp("./uczen", "./uczen", NULL);
         }
     }
 
