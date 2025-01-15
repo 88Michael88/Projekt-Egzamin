@@ -12,7 +12,7 @@ int main() {
             break;
         case 0:
             // Create Student.c
-            execlp("./student_executable", "./student_executable", NULL);
+            execlp("./student", "./student", NULL);
             break;
         default:
             break;
@@ -25,7 +25,7 @@ int main() {
             break;
         case 0:
             // Create Komisja.c
-            execlp("./komisja_executable", "./komisja_executable", NULL);
+            execlp("./komisja", "./komisja", NULL);
             break;
         default:
             break;
@@ -34,6 +34,9 @@ int main() {
     printf("StudentPID: %d \n", studentPID);
     printf("KomisjaPID: %d \n", komisjaPID);
     sleep(5);
+
+    kill(studentPID, SIGUSR1);
+    kill(komisjaPID, SIGUSR1); 
 
     wait(NULL);
     wait(NULL);
