@@ -1,26 +1,20 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -O2
-
-# Source and header files
-SRC = dziekan.c student.c komisja.c 
+CFLAGS = -Wall -g
 
 # Object files
-OBJ = $(SRC:.c=.o)
+OBJS = dziekan.o student.o komisja.o
 
-# Default target
-all: dziekan student komisja 
+# Targets
+all: $(OBJS) 
 
-# Generate dziekan file
-dziekan: 
-	$(CC) $(CFLAGS) dziekan.c -o dziekan 
+dziekan.o: dziekan.c
+	$(CC) $(CFLAGS) dziekan.c -o $@
 
-# Generate student file
-student:
-	$(CC) $(CFLAGS) student.c -o student
+student.o: student.c
+	$(CC) $(CFLAGS) -c student.c -o $@
 
-# Generate komisja file
-komisja:
-	$(CC) $(CFLAGS) komisja.c -o komisja
+komisja.o: komisja.c
+	$(CC) $(CFLAGS) -c komisja.c -o $@
 
 # Generating assembly files
 %.s: %.c $(HEADERS)
@@ -31,7 +25,7 @@ assembly: $(SRC:.c=.s)
 
 # Clean up build artifacts
 clean:
-	rm -f $(OBJ) $(OUTPUT)
+	rm -f $(OBJ)
 
 # Phony targets
 .PHONY: all clean
