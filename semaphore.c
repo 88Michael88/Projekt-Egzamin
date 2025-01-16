@@ -11,7 +11,7 @@
 int allocSemaphore(char* filename, int number, int flags) {
     key_t key;
 
-    if ((key = ftok(".", 0)) == -1) {
+    if ((key = ftok(filename, 0)) == -1) {
         return IPC_RESULT_ERROR;
     }
 
@@ -41,7 +41,7 @@ int waitSemaphore(int semID, int number, int flags) {
     operacje[0].sem_flg = 0 | flags;//SEM_UNDO;
 
     if (semop(semID, operacje, 1) == -1) {
-        //perror("Blad semop (waitSemaphore)");
+        perror("Blad semop (waitSemaphore)");
         return -1;
     }
 
@@ -52,7 +52,7 @@ void signalSemaphore(int semID, int number) {
     struct sembuf operacje[1];
     operacje[0].sem_num = number;
     operacje[0].sem_op = 1;
-    //operacje[0].sem_flg = SEM_UNDO;
+    operacje[0].sem_flg = SEM_UNDO;
 
     if (semop(semID, operacje, 1) == -1 )
         perror("Blad semop (postSemaphore): "); 

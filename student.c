@@ -8,8 +8,11 @@ int main() {
     srand(time(NULL));
     int randomNumber = (rand() % 80) + 80; // Generate a number between 80 to 160.
     
-    printf("Jest %d studentow", randomNumber);
+    printf("Jest %d studentow\n", randomNumber);
     for (int i = 0; i < randomNumber; i++) {
+        if ((rand() % 15) == 5) {
+            sleep(rand() % 5);
+        }
         switch (fork()) {
             case -1:
                 printf("There was an error forking.");

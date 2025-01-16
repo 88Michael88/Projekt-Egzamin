@@ -16,10 +16,9 @@ int main() {
     srand(time(NULL));
 
     int semID = allocSemaphore(sem_FILENAME, 1, IPC_CREAT | IPC_EXCL | 0666);
-    printf("%d", semID);
     initSemaphore(semID, 0, 0);
 
-    char* block = attachMemoryBlock(shm_FILENAME, shm_SIZE);
+    int* block = (int*)attachMemoryBlock(shm_FILENAME, shm_SIZE);
     if (block == NULL) {
         printf("ERROR: Couldn't get block");
         return -1;
@@ -28,17 +27,16 @@ int main() {
     setUp();
 
     // Generate a random number and convert it into a char.
-    int randomNum = rand() % 4 + 5;
-    char charNum[2]; 
-    snprintf(charNum, sizeof(charNum), "%d", randomNum);
-    printf("Writing: %s\n", charNum);
-    strncpy(block, charNum, shm_SIZE);
+    int randomNum = rand() % num_studies;
+    block[0] = randomNum;
+    printf("Writing: %d\n", block[0]);
 
-    signalSemaphore(semID, 1);
+    signalSemaphore(semID, 0);
     wait(NULL);
     wait(NULL);
 
     destroyMemoryBlock(shm_FILENAME);
+    destroySemaphore(semID, 0);
 
     return 0;
 }

@@ -6,4 +6,6 @@
 
 #define sem_FILENAME "semaf"
 
+#define num_studies 5
+
 #endif // __consts_h__

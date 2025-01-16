@@ -18,23 +18,23 @@ static int createMemoryBlock(char* filename, int size) {
     return shmget(key, size, 0666 | IPC_CREAT);
 }
 
-char* attachMemoryBlock(char* filename, int size) {
+void* attachMemoryBlock(char* filename, int size) {
     int sharedBlockID = createMemoryBlock(filename, size);
-    char* result;
+    void* result;
 
     if (sharedBlockID == IPC_RESULT_ERROR) {
         return NULL;
     }
 
     result = shmat(sharedBlockID, NULL, 0);
-    if (result == (char*)IPC_RESULT_ERROR) {
+    if (result == (void*)IPC_RESULT_ERROR) {
         return NULL;
     }
 
     return result;
 }
 
-bool detachMemoryBlock(char* block) {
+bool detachMemoryBlock(void* block) {
     return (shmdt(block) != IPC_RESULT_ERROR);
 }
 
