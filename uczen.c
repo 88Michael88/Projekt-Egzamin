@@ -27,8 +27,6 @@ int main() {
     if (block[0] == kierunek){
         printf("I am in. %d == %d\n", block[0], kierunek);
     } 
-    sleep(1);
-    signalSemaphore(semID, 0);
 
     detachMemoryBlock((void*)block);
     

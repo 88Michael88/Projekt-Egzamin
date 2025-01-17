@@ -48,10 +48,10 @@ int waitSemaphore(int semID, int number, int flags) {
     return 1;
 }
 
-void signalSemaphore(int semID, int number) {
+void signalSemaphore(int semID, int number, int option) {
     struct sembuf operacje[1];
     operacje[0].sem_num = number;
-    operacje[0].sem_op = 1;
+    operacje[0].sem_op = option;
     operacje[0].sem_flg = SEM_UNDO;
 
     if (semop(semID, operacje, 1) == -1 )

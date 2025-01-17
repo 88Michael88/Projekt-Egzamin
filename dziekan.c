@@ -31,7 +31,7 @@ int main() {
     block[0] = randomNum;
     printf("Writing: %d\n", block[0]);
 
-    signalSemaphore(semID, 0);
+    signalSemaphore(semID, 0, 160);
     wait(NULL);
     wait(NULL);
 
