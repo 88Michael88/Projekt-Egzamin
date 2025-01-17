@@ -6,6 +6,8 @@
 
 #define sem_FILENAME "semaf"
 
+#define msg_FILENAME "msgq"
+
 #define num_studies 5
 
 #endif // __consts_h__

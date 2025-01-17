@@ -1,14 +1,20 @@
+#define _POSIX_SOURCE
 #include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
+#include <signal.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
 #include <string.h>
 #include <fcntl.h>
 #include <sys/ipc.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 #include "sharedMemory.h"
 #include "semaphore.h"
 #include "const.h"
+
+
+pid_t studentPID, komisjaPID;
 
 void setUp();
 
@@ -32,6 +38,18 @@ int main() {
     printf("Writing: %d\n", block[0]);
 
     signalSemaphore(semID, 0, 160);
+    
+    
+
+
+
+
+
+
+
+
+
+
     wait(NULL);
     wait(NULL);
 
@@ -43,8 +61,6 @@ int main() {
 
 
 void setUp() {
-    pid_t studentPID, komisjaPID;
-
     studentPID = fork();
     switch(studentPID) {
         case -1:
@@ -73,4 +89,10 @@ void setUp() {
 
     printf("StudentPID: %d \n", studentPID);
     printf("KomisjaPID: %d \n", komisjaPID);
+
+    if ((rand() % 20) == 0) {
+        printf("Dziekanat-- FIRE ALARM!");
+        kill(studentPID, SIGUSR1);
+        kill(komisjaPID, SIGUSR1); 
+    }
 }

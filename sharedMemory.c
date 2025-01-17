@@ -11,7 +11,7 @@
 static int createMemoryBlock(char* filename, int size) {
     key_t key;
     
-    if ((key = ftok(filename, 0)) == IPC_RESULT_ERROR) {
+    if ((key = ftok(filename, 1)) == IPC_RESULT_ERROR) {
         return IPC_RESULT_ERROR;
     }
 
