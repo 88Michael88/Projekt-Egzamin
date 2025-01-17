@@ -21,6 +21,7 @@ int main() {
 
     if (block[0] == kierunek){
         printf("%d, Studiuje na wydziale %d i na kieruneku %d, poprawiam %d\n", getpid(), wydzial, kierunek, retakeEgzam);
+        sleep(5);
     } 
 
     detachMemoryBlock((void*)block);

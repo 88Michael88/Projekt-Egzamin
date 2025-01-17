@@ -8,6 +8,9 @@
 
 #define msg_FILENAME "msgq"
 
+#define msg_FILENAME_A "msgqA"
+#define msg_FILENAME_B "msgqB"
+
 #define num_studies 5
 
 #endif // __consts_h__
