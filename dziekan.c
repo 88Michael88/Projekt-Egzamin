@@ -41,26 +41,27 @@ int main() {
 
     signalSemaphore(semID, 0, 160);
     
-    int msgID_A = attachMessageQueue(msg_FILENAME_A);
-    int msgID_B = attachMessageQueue(msg_FILENAME_B);
+    //int msgID_A = attachMessageQueue(msg_FILENAME_A);
+    //int msgID_B = attachMessageQueue(msg_FILENAME_B);
+//
+//    struct gradeMessage testMessage;
+//
+//    receiveMessageQueue(msgID_A, (void*)&testMessage, sizeof(testMessage) - sizeof(testMessage.messageType), 2, 0); 
+//    
+//    printf("TestMessage A:\n");
+//    printf("TestMessage.messageType: %ld\n", testMessage.messageType);
+//    printf("TestMessage.komisja: %c\n", testMessage.komisja);
+//    printf("TestMessage.studentID: %d\n", testMessage.studentID);
+//    printf("TestMessage.grade: %f\n", testMessage.grade);
+//
+//    receiveMessageQueue(msgID_B, (void*)&testMessage, sizeof(testMessage) - sizeof(testMessage.messageType), 2, 0); 
+//    
+//    printf("TestMessage B:\n");
+//    printf("TestMessage.messageType: %ld\n", testMessage.messageType);
+//    printf("TestMessage.komisja: %c\n", testMessage.komisja);
+//    printf("TestMessage.studentID: %d\n", testMessage.studentID);
+//    printf("TestMessage.grade: %f\n", testMessage.grade);
 
-    struct gradeMessage testMessage;
-
-    receiveMessageQueue(msgID_A, (void*)&testMessage, sizeof(testMessage) - sizeof(testMessage.messageType), 2, 0); 
-    
-    printf("TestMessage A:\n");
-    printf("TestMessage.messageType: %ld\n", testMessage.messageType);
-    printf("TestMessage.komisja: %c\n", testMessage.komisja);
-    printf("TestMessage.studentID: %d\n", testMessage.studentID);
-    printf("TestMessage.grade: %f\n", testMessage.grade);
-
-    receiveMessageQueue(msgID_B, (void*)&testMessage, sizeof(testMessage) - sizeof(testMessage.messageType), 2, 0); 
-    
-    printf("TestMessage B:\n");
-    printf("TestMessage.messageType: %ld\n", testMessage.messageType);
-    printf("TestMessage.komisja: %c\n", testMessage.komisja);
-    printf("TestMessage.studentID: %d\n", testMessage.studentID);
-    printf("TestMessage.grade: %f\n", testMessage.grade);
 
     wait(NULL);
     wait(NULL);

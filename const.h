@@ -6,6 +6,10 @@
 
 #define sem_FILENAME "semaf"
 
+#define sem_Komisja "sem"
+#define sem_KomisjaA "semA"
+#define sem_KomisjaB "semB"
+
 #define msg_FILENAME "msgq"
 
 #define msg_FILENAME_A "msgqA"

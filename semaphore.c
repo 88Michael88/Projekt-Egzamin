@@ -8,9 +8,7 @@
 
 #define IPC_RESULT_ERROR (-1)
 
-int allocSemaphore(char* filename, int number, int flags) {
-    key_t key;
-
+int allocSemaphore(char* filename, int number, int flags) { key_t key;
     if ((key = ftok(filename, 0)) == -1) {
         return IPC_RESULT_ERROR;
     }
