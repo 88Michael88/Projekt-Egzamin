@@ -100,9 +100,6 @@ void setUp() {
             break;
     }
 
-    printf("StudentPID: %d \n", studentPID);
-    printf("KomisjaPID: %d \n", komisjaPID);
-
     if ((rand() % 20) == 0) {
         printf("Dziekanat-- FIRE ALARM!");
         kill(studentPID, SIGUSR1);

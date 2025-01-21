@@ -4,25 +4,28 @@
 struct egzamHello {
     long int messageType; // 1 - Main, 2 - Thread1, 3 - Thread2
     int studentID;
-    int threadID;
+    int codeForQuestion;
+    unsigned long int threadID;
 };
 
 struct egzamQuestion {
     long int messageType; // To (studentID);
-    int threadID; // From 
+    unsigned long int threadID; // From 
+    int codeForAswer;                                
     int question; 
 };
 
 struct egzamAnswer {
     long int messageType; // To (threadID); 
     int studentID; // From
+    int codeForGrade;
     int answer;
 
 };
 
 struct egzamGrade {
     long int messageType; // To (studentID); 
-    int threadID; // From 
+    unsigned long int threadID; // From 
     float grade;
 };
 

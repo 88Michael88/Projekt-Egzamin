@@ -32,26 +32,32 @@ int main() {
 
     int msgID = attachMessageQueue(msg_FILENAME_A);
 
-    struct egzamHello hello[3];
-    int threads[3] = {0};
-
     // send hello
+    struct egzamHello hello[3];
+    unsigned long int threads[3] = {0};
     for (int i = 0; i < 3; i++) {
         hello[i].messageType = i+1;
         hello[i].studentID = getpid();
+        hello[i].codeForQuestion = 0;
         hello[i].threadID = 0;
-        sendMessageQueue(msgID, (void*)&hello[i], sizeof(struct egzamHello) - sizeof(hello[i].messageType), 0);
+        sendMessageQueue(msgID, &hello[i], sizeof(struct egzamHello) - sizeof(hello[i].messageType), 0);
     }
-
+    
     // receive hello
     for (int i = 0; i < 3; i++) {
-        receiveMessageQueue(msgID, (void*)&hello[i], sizeof(struct egzamHello) - sizeof(hello[i].messageType), getpid(), 0);
+        receiveMessageQueue(msgID, &hello[i], sizeof(struct egzamHello) - sizeof(hello[i].messageType), getpid(), 0);
         threads[i] = hello[i].threadID;
+        printf("%lu == %lu\n", threads[i], hello[i].threadID);
     }
-    printf("%d: %d, %d, %d.\n", getpid(), threads[0], threads[1], threads[2]);
+    printf("%d I will send to: %lu, %lu, %lu.\n", getpid(), threads[0], threads[1], threads[2]);
+
     // receive egzam question
+    struct egzamQuestion question[3]; 
     for (int i = 0; i < 3; i++) {
+        receiveMessageQueue(msgID, (void*)&question[i], sizeof(struct egzamQuestion) - sizeof(question[i].messageType), hello[i].codeForQuestion, 0);
+        printf("question[i].question = %u\n", question[i].question);
     }
+    printf("Received all questions: %d, %d, %d\n", question[0].question, question[1].question, question[2].question);
     
     // send egzam answer
     for (int i = 0; i < 3; i++) {
