@@ -25,10 +25,11 @@ int main() {
         detachMemoryBlock((void*)block);
         exit(0);
     } 
-    printf("%d, Studiuje na wydziale %d i na kieruneku %d, poprawiam %d\n", getpid(), wydzial, kierunek, retakeEgzam);
+    //printf("%d, Studiuje na wydziale %d i na kieruneku %d, poprawiam %d\n", getpid(), wydzial, kierunek, retakeEgzam);
 
     int semIDKom = allocSemaphore(sem_KomisjaA, 1, IPC_CREAT | 0666);
     waitSemaphore(semIDKom, 0, 0);  
+    printf("%d - Student - Jestem w komisji A\n", getpid());
 
     int msgID = attachMessageQueue(msg_FILENAME_A);
 
@@ -47,7 +48,6 @@ int main() {
     for (int i = 0; i < 3; i++) {
         receiveMessageQueue(msgID, &hello[i], sizeof(struct egzamHello) - sizeof(hello[i].messageType), getpid(), 0);
         threads[i] = hello[i].threadID;
-        printf("%lu == %lu\n", threads[i], hello[i].threadID);
     }
     printf("%d I will send to: %lu, %lu, %lu.\n", getpid(), threads[0], threads[1], threads[2]);
 
@@ -55,20 +55,29 @@ int main() {
     struct egzamQuestion question[3]; 
     for (int i = 0; i < 3; i++) {
         receiveMessageQueue(msgID, (void*)&question[i], sizeof(struct egzamQuestion) - sizeof(question[i].messageType), hello[i].codeForQuestion, 0);
-        printf("question[i].question = %u\n", question[i].question);
     }
     printf("Received all questions: %d, %d, %d\n", question[0].question, question[1].question, question[2].question);
-    
+   
     // send egzam answer
+    sleep(2);
+    struct egzamAnswer answer[3];
+    
     for (int i = 0; i < 3; i++) {
+        answer[i].messageType = question[i].codeForAnswer;
+        answer[i].codeForGrade = 10 + i; 
+        answer[i].answer = 6;
+        sendMessageQueue(msgID, &answer[i], sizeof(struct egzamAnswer) - sizeof(answer[0].messageType), 0);
     }
 
     // receive egzam grade 
     // if failed exit.
+    struct egzamGrade grade[3];
     for (int i = 0; i < 3; i++) {
+        receiveMessageQueue(msgID, (void*)&grade[i], sizeof(struct egzamGrade) - sizeof(grade[i].messageType), answer[i].codeForGrade, 0);
+        printf("Received Grade %.1f\n", grade[i].grade);
     }
 
-
+    printf("%d I have finished\n", getpid());
     detachMemoryBlock((void*)block);
     return 0;
 }

@@ -6,6 +6,7 @@ int destroySemaphore(int semID, int number);
 void initSemaphore(int semID, int number, int val);
 int waitSemaphore(int semID, int number, int flags);
 void signalSemaphore(int semID, int number, int option);
+int numberWaiting(int semID, int number);
 int valueSemaphore(int semID, int number);
 
 

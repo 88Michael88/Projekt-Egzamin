@@ -46,6 +46,10 @@ int waitSemaphore(int semID, int number, int flags) {
     return 1;
 }
 
+int numberWaiting(int semID, int number) {
+    return semctl(semID, number, GETNCNT); 
+}
+
 void signalSemaphore(int semID, int number, int option) {
     struct sembuf operacje[1];
     operacje[0].sem_num = number;

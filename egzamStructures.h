@@ -11,7 +11,7 @@ struct egzamHello {
 struct egzamQuestion {
     long int messageType; // To (studentID);
     unsigned long int threadID; // From 
-    int codeForAswer;                                
+    int codeForAnswer;                                
     int question; 
 };
 
@@ -20,7 +20,6 @@ struct egzamAnswer {
     int studentID; // From
     int codeForGrade;
     int answer;
-
 };
 
 struct egzamGrade {
