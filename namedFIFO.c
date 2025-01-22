@@ -16,4 +16,10 @@ int namedFIFO(char* filename) {
     return fileDiscriptor;
 }
 
-int writeFIFO(int fileint file
+int writeFIFO(int fileDiscriptor, void* data, int size) {
+
+}
+
+int readFIFO(int fileDiscriptor, void* buf, int size) {
+    
+}

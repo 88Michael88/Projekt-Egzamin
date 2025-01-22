@@ -15,6 +15,13 @@
 #define msg_FILENAME_A "msgqA"
 #define msg_FILENAME_B "msgqB"
 
+#define fifo_FILENAME "fifo"
+
+#define fifo_FILENAME_A "fifoA"
+#define fifo_FILENAME_B "fifoB"
+
 #define num_studies 5
+
+
 
 #endif // __consts_h__
