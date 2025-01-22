@@ -9,12 +9,13 @@
 #define IPC_RESULT_ERROR (-1)
 
 int allocSemaphore(char* filename, int number, int flags) { key_t key;
-    if ((key = ftok(filename, 0)) == -1) {
+    if ((key = ftok(filename, 2)) == -1) {
         return IPC_RESULT_ERROR;
     }
 
     int semID;
     if ((semID = semget(key, number, flags)) == -1) {
+        printf("ERROR: %s", filename);
         perror("Blad semget (alokujSemaphore): ");
         exit(1);
     }

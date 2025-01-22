@@ -13,6 +13,7 @@
 #include "const.h"
 
 void* osobaZkomisji(void* msgID);
+float gradeGeneration();
 int semID, msgID;
 int codes[9];
 
@@ -20,7 +21,6 @@ int codes[9];
 StudentGrade* head;
 int main(int argc, char **argv) {
     srand(time(NULL));
-    printf("%d, %s\n", argc, argv[1]);
     
     char* filename = (char *)malloc(sizeof(char)*6);
     if (filename == NULL) {
@@ -38,8 +38,9 @@ int main(int argc, char **argv) {
     strcpy(semaphoreName, sem_Komisja);
     strcat(semaphoreName, argv[1]);
 
-    semID = allocSemaphore(semaphoreName, 1, IPC_CREAT | IPC_EXCL | 0666); 
+    semID = allocSemaphore(semaphoreName, 2, IPC_CREAT | IPC_EXCL | 0666); 
     initSemaphore(semID, 0, 0);
+    initSemaphore(semID, 1, 0);
     msgID = attachMessageQueue(filename);
     
     head = malloc(sizeof(StudentGrade));
@@ -57,7 +58,9 @@ int main(int argc, char **argv) {
     pthread_t thread[2];
     int* threadNumber = malloc(sizeof(int) * 2);
 
-    sleep(5);
+
+    sleep(5); // try to remove this.
+    waitSemaphore(semID, 1, 0);
     
     int numWaiting = 0;
     
@@ -74,16 +77,17 @@ int main(int argc, char **argv) {
 
         // receive hello
         struct egzamHello hello;  
-        int currnetStudentID = 0;
+        int currentStudentID = 0;
         receiveMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), 1, 0);
-        head->addStudent(head, hello.studentID);
 
         // send hello
-        currnetStudentID = hello.studentID;
-        hello.messageType = currnetStudentID;
+        currentStudentID = hello.studentID;
+        hello.messageType = currentStudentID;
         hello.threadID = getpid();
         hello.codeForQuestion = codes[0];
         sendMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), 0);
+
+        head->addStudent(head, currentStudentID); 
 
         // send egzamQuestion
         struct egzamQuestion question;
@@ -95,31 +99,40 @@ int main(int argc, char **argv) {
         question.codeForAnswer = codes[3];
         question.question = (rand() % 100);
         sendMessageQueue(msgID, (void*)&question, sizeof(struct egzamQuestion) - sizeof(question.messageType), 0);
-        printf("Main - Send Question\n");
+        //printf("Main - Send Question\n");
 
         //receive egzamAnswer
         struct egzamAnswer answer;
         receiveMessageQueue(msgID, (void*)&answer, sizeof(struct egzamAnswer) - sizeof(answer.messageType), question.codeForAnswer, 0);  
-        printf("Main - Answer received : %d\n", answer.answer);
+        //printf("Main - Answer received : %d\n", answer.answer);
 
         // send egzamGrade
         struct egzamGrade grade;
         grade.messageType = answer.codeForGrade;
         grade.threadID = getpid();
-        grade.grade = 5.0;
+        grade.grade = gradeGeneration();
+        head->findStudentAndGrade(head, currentStudentID, 0, grade.grade);
         sendMessageQueue(msgID, (void*)&grade, sizeof(struct egzamGrade) - sizeof(grade.messageType), 0);
 
+        // Wait for the thread to complete
         for (int i = 0; i < 2; i++) {
             if (pthread_join(thread[i], NULL) != 0) {
                 perror("Failed to join thread");
                 return 1;
             }
         }
+        head->calculateFinalGrade(head, currentStudentID); 
+        if (*argv[1] == 'B') {
+            printf("B\n");
+            sleep(2);
+        }
     }
-    printf("end\n");
-    // Wait for the thread to complete
+    printf("End %s\n", argv[1]);
 
-    sleep(20);
+    head->printQueue(head); 
+    head->cleanGradeQueue(head);
+
+    //sleep(20);
     destroySemaphore(semID, 0);
     deleteMessageQueue(msgID);
     free(head);
@@ -128,7 +141,7 @@ int main(int argc, char **argv) {
 
 void* osobaZkomisji(void* threadNumber) {
     srand(time(NULL));
-    int currnetStudentID = 0;
+    int currentStudentID = 0;
     int curThreadNum = *(int *)threadNumber;
     pthread_t threadID = pthread_self() % 100000;
 
@@ -137,8 +150,8 @@ void* osobaZkomisji(void* threadNumber) {
     receiveMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), curThreadNum, 0);
 
     // send hello
-    currnetStudentID = hello.studentID;
-    hello.messageType = currnetStudentID;
+    currentStudentID = hello.studentID;
+    hello.messageType = currentStudentID;
     hello.threadID = threadID;
     sendMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), 0);
 
@@ -156,14 +169,24 @@ void* osobaZkomisji(void* threadNumber) {
     //receive egzamAnswer
     struct egzamAnswer answer;
     receiveMessageQueue(msgID, (void*)&answer, sizeof(struct egzamAnswer) - sizeof(answer.messageType), question.codeForAnswer, 0);  
-    printf("Answer received: %d\n", answer.answer);
+    //printf("Answer received: %d\n", answer.answer);
 
     // send egzamGrade
     struct egzamGrade grade;
     grade.messageType = answer.codeForGrade;
     grade.threadID = threadID;
-    grade.grade = 5.0;
+    grade.grade = gradeGeneration();
+    head->findStudentAndGrade(head, currentStudentID, curThreadNum - 1, grade.grade);
     sendMessageQueue(msgID, (void*)&grade, sizeof(struct egzamGrade) - sizeof(grade.messageType), 0);
 
     return (void*)0;
+}
+
+float gradeGeneration() {
+    int grade = (rand() % 20);
+    if ((!grade) == 1) {
+        return 2.0;
+    } else {
+        return (grade % 3) + 3;
+    }
 }
