@@ -1,6 +1,11 @@
 #ifndef __list_double_link_h__
 #define __list_double_link_h__
 
+typedef struct GradeData {
+    int studentID;
+    float grades[3];
+    float finalGrade;
+}; 
 
 struct StudentGrade;
 
