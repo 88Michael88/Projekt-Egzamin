@@ -15,10 +15,10 @@
 #define msg_FILENAME_A "msgqA"
 #define msg_FILENAME_B "msgqB"
 
-#define fifo_FILENAME "fifo"
+#define fifo_PATH "/home/michaelmoses/Desktop/SO/Projekt/fifo"
 
-#define fifo_FILENAME_A "fifoA"
-#define fifo_FILENAME_B "fifoB"
+#define fifo_PATH_A "/home/michaelmoses/Desktop/SO/Projekt/fifoA"
+#define fifo_PATH_B "/home/michaelmoses/Desktop/SO/Projekt/fifoB"
 
 #define num_studies 5
 

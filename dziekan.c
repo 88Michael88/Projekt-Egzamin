@@ -13,6 +13,8 @@
 #include "semaphore.h"
 #include "messageQueue.h"
 #include "gradeMessage.h"
+#include "list.h"
+#include "namedFIFO.h"
 #include "const.h"
 
 
@@ -41,7 +43,31 @@ int main() {
 
     signalSemaphore(semID, 0, 160);
     
+    createFIFO(fifo_PATH_A);
 
+    int fileDesk = openFIFOForRead(fifo_PATH_A);
+
+    struct GradeData grade;
+
+    while (readFIFO(fileDesk, &grade, sizeof(GradeData)) != -1) {
+        printf("StudentID: %d,\n", grade.studentID);
+        printf("Grades: %.1f %.1f %.1f,\n", grade.grades[0], grade.grades[1], grade.grades[2]);
+        printf("Final Grade: %.2f.\n", grade.finalGrade);
+    }
+
+    cleanupFIFO(fifo_PATH_A);
+    
+    createFIFO(fifo_PATH_B);
+
+    fileDesk = openFIFOForRead(fifo_PATH_B);
+
+    while (readFIFO(fileDesk, &grade, sizeof(GradeData)) != -1) {
+        printf("StudentID: %d,\n", grade.studentID);
+        printf("Grades: %.1f %.1f %.1f,\n", grade.grades[0], grade.grades[1], grade.grades[2]);
+        printf("Final Grade: %.2f.\n", grade.finalGrade);
+    }
+
+    cleanupFIFO(fifo_PATH_B);
     wait(NULL);
     wait(NULL);
 

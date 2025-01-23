@@ -10,6 +10,7 @@
 #include "gradeMessage.h"
 #include "messageQueue.h"
 #include "semaphore.h"
+#include "namedFIFO.h"
 #include "const.h"
 
 void* osobaZkomisji(void* msgID);
@@ -129,6 +130,31 @@ int main(int argc, char **argv) {
     }
     printf("End %s\n", argv[1]);
 
+
+    char* pipePath = malloc(sizeof(char)*45);
+    if (pipePath == NULL) {
+        perror("malloc pipePath.");
+        return -1;
+    }
+
+    strcpy(pipePath, fifo_PATH);
+    strcat(pipePath, argv[1]);
+
+    int fileDesk = openFIFOForWrite(pipePath);
+
+    struct GradeData grade;
+    StudentGrade* next;
+    next = head;
+
+    while (next != NULL) {
+        grade.studentID = next->studentID;
+        memcpy(grade.grades, next->grades, sizeof(float) * 3);
+        grade.finalGrade = next->finalGrade;
+        writeFIFO(fileDesk, &grade, sizeof(GradeData));
+        next = next->next;
+    }
+
+
     head->printQueue(head); 
     head->cleanGradeQueue(head);
 
@@ -136,6 +162,9 @@ int main(int argc, char **argv) {
     destroySemaphore(semID, 0);
     deleteMessageQueue(msgID);
     free(head);
+    free(filename);
+    free(semaphoreName);
+    free(pipePath);
     return 0;
 }
 

@@ -5,7 +5,7 @@ typedef struct GradeData {
     int studentID;
     float grades[3];
     float finalGrade;
-}; 
+} GradeData; 
 
 struct StudentGrade;
 
