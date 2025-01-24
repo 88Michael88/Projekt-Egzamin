@@ -55,7 +55,7 @@ void signalSemaphore(int semID, int number, int option) {
     struct sembuf operacje[1];
     operacje[0].sem_num = number;
     operacje[0].sem_op = option;
-    operacje[0].sem_flg = SEM_UNDO;
+    operacje[0].sem_flg = 0;
 
     if (semop(semID, operacje, 1) == -1 )
         perror("Blad semop (postSemaphore): "); 

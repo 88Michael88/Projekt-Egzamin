@@ -18,14 +18,14 @@ typedef struct studentGradeListDL {
 
     void (*findStudentAndGrade)(struct studentGradeListDL*, int, int, float);
     int (*addStudent)(struct studentGradeListDL*, int);
-    int (*calculateFinalGrade)(struct studentGradeListDL*, int);
+    float (*calculateFinalGrade)(struct studentGradeListDL*, int);
     void (*printQueue)(struct studentGradeListDL*);
     void (*cleanGradeQueue)(struct studentGradeListDL* head);
 } StudentGrade;
 
 void findStudentAndGrade(StudentGrade* head, int studentID, int komisjaID, float grade);
 int addStudent(StudentGrade* head, int studentID); 
-int calculateFinalGrade(StudentGrade* head, int studentID);
+float calculateFinalGrade(StudentGrade* head, int studentID);
 void printQueue(StudentGrade* head);
 void cleanGradeQueue(StudentGrade* head);
 

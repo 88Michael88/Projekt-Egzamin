@@ -25,7 +25,13 @@ struct egzamAnswer {
 struct egzamGrade {
     long int messageType; // To (studentID); 
     unsigned long int threadID; // From 
+    int codeForFinalGrade;
     float grade;
+};
+
+struct egzamFinalGrade {
+    long int messageType;
+    float finalGrade;
 };
 
 #endif //__egzamin_h__

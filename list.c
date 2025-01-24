@@ -75,7 +75,7 @@ static float normalization(float grade) {
     }
 }
 
-int calculateFinalGrade(StudentGrade* head, int studentID) {
+float calculateFinalGrade(StudentGrade* head, int studentID) {
     StudentGrade* next = head;
     while (next->studentID != studentID) {
         next = next->next;

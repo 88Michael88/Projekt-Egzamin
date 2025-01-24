@@ -9,7 +9,7 @@
 #include "messageQueue.h"
 #include "const.h"
 
-void egzamin(int msgID);
+int egzamin(int msgID);
 
 int main() {
     srand(time(NULL) + getpid());
@@ -34,9 +34,14 @@ int main() {
     printf("%d - Student - Jestem w komisji A\n", getpid());
 
     int msgID_A = attachMessageQueue(msg_FILENAME_A); // communicate with komisja A
-    egzamin(msgID_A);
+    float finalGrade = egzamin(msgID_A);
 
-    printf("%d I have finished A\n", getpid());
+    if (finalGrade == 2.0) { // Student failed.
+        printf("%d - Student - Nie zdalem.");
+        exit(0);
+    }
+    printf("%d - Student - Zdalem.");
+
     detachMemoryBlock((void*)block);
 
     int semIDKomB = allocSemaphore(sem_KomisjaB, 2, IPC_CREAT | 0666);
@@ -45,13 +50,14 @@ int main() {
     printf("%d - Student - Jestem w komisji B\n", getpid());
 
     int msgID_B = attachMessageQueue(msg_FILENAME_B); // communicate with komisja B
-    egzamin(msgID_B);
+    finalGrade = egzamin(msgID_B);
+
 
     printf("%d I have finished B\n", getpid());
     return 0;
 }
 
-void egzamin(int msgID) {
+int egzamin(int msgID) {
     // send hello
     struct egzamHello hello[3];
     //unsigned long int threads[3] = {0};
@@ -91,8 +97,17 @@ void egzamin(int msgID) {
     // receive egzam grade 
     // if failed exit.
     struct egzamGrade grade[3];
+    int finalGradeCode;
     for (int i = 0; i < 3; i++) {
         receiveMessageQueue(msgID, (void*)&grade[i], sizeof(struct egzamGrade) - sizeof(grade[i].messageType), answer[i].codeForGrade, 0);
         //printf("Received Grade %.1f\n", grade[i].grade);
+        if (grade[i].codeForFinalGrade != 0) {
+            finalGradeCode = grade[i].codeForFinalGrade;
+        }
     }
+    
+    struct egzamFinalGrade finalGrade;
+    receiveMessageQueue(msgID, (void*)&finalGrade, sizeof(struct egzamFinalGrade) - sizeof(finalGrade.messageType), finalGradeCode, 0);
+
+    return finalGrade.finalGrade;
 }
