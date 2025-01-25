@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "dziekan-list.h"
+#include "./headers/dziekan-list.h"
 
 int addStudentD(DziekanFinalGrade* head, int studentID) {
     if (head->studentID == 0) {

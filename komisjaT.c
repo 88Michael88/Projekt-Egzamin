@@ -5,12 +5,12 @@
 #include <sys/ipc.h>
 #include <pthread.h>
 #include <time.h>
-#include "list.h"
-#include "egzamStructures.h"
-#include "gradeMessage.h"
-#include "messageQueue.h"
-#include "semaphore.h"
-#include "namedFIFO.h"
+#include "./headers/list.h"
+#include "./headers/egzamStructures.h"
+#include "./headers/gradeMessage.h"
+#include "./headers/messageQueue.h"
+#include "./headers/semaphore.h"
+#include "./headers/namedFIFO.h"
 #include "const.h"
 
 void* osobaZkomisji(void* msgID);

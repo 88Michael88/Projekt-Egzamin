@@ -9,14 +9,14 @@
 #include <sys/ipc.h>
 #include <sys/wait.h>
 #include <sys/types.h>
-#include "sharedMemory.h"
-#include "semaphore.h"
-#include "messageQueue.h"
-#include "gradeMessage.h"
-#include "list.h"
-#include "namedFIFO.h"
+#include "./headers/sharedMemory.h"
+#include "./headers/semaphore.h"
+#include "./headers/messageQueue.h"
+#include "./headers/gradeMessage.h"
+#include "./headers/list.h"
+#include "./headers/namedFIFO.h"
 #include "const.h"
-#include "dziekan-list.h"
+#include "./headers/dziekan-list.h"
 
 pid_t studentPID, komisjaPID;
 

@@ -3,10 +3,10 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/ipc.h>
-#include "semaphore.h"
-#include "egzamStructures.h"
-#include "sharedMemory.h"
-#include "messageQueue.h"
+#include "./headers/semaphore.h"
+#include "./headers/egzamStructures.h"
+#include "./headers/sharedMemory.h"
+#include "./headers/messageQueue.h"
 #include "const.h"
 
 int egzamin(int msgID);

@@ -4,7 +4,6 @@
 #include "myPrintf.h"
 #include "ANSI.h"
 
-
 // Function definition
 void myPrintf(const char *color, const char *format, ...) {
     va_list args;

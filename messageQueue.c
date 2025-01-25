@@ -3,7 +3,7 @@
 #include <sys/errno.h>
 #include <stddef.h>
 #include <stdio.h>
-#include "messageQueue.h"
+#include "./headers/messageQueue.h"
 
 #define IPC_RESULT_ERROR (-1)
 
