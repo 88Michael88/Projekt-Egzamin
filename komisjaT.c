@@ -11,6 +11,8 @@
 #include "./headers/messageQueue.h"
 #include "./headers/semaphore.h"
 #include "./headers/namedFIFO.h"
+#include "./headers/ANSI.h"
+#include "./headers/colorPrintf.h"
 #include "const.h"
 
 void* osobaZkomisji(void* msgID);
@@ -133,7 +135,7 @@ int main(int argc, char **argv) {
             sleep(2); // Try to remove this. This could be a semaphore.
         }
     }
-    printf("End %s\n", argv[1]);
+    colorPrintf(MAGENTA, "End %s \x1b[0m \n", argv[1]);
 
 
     char* pipePath = malloc(sizeof(char)*45);

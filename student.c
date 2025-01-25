@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <pthread.h>
+#include "./headers/ANSI.h"
+#include "./headers/colorPrintf.h"
 
 void handler(int sig) {
     printf("Student Signal Handler: %d\n", sig);
@@ -12,7 +14,6 @@ void handler(int sig) {
 }
 
 void* cleanUpStudents(void* numberOfStudents) {
-    printf("numberOfStudents: %d\n", *(int *)numberOfStudents);
     for (int i = 0; i < *(int *)numberOfStudents; i++) {
         wait(NULL);
     }
@@ -32,7 +33,7 @@ int main() {
         return 1;
     }
     
-    printf("Jest %d studentow\n", randomNumber);
+    colorPrintf(BLUE, "Jest %d studentow  \x1b[0m \n", randomNumber);
     for (int i = 0; i < randomNumber; i++) {
         if ((rand() % 15) == 5) {
             sleep(rand() % 5); // generate students.

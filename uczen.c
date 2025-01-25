@@ -7,6 +7,8 @@
 #include "./headers/egzamStructures.h"
 #include "./headers/sharedMemory.h"
 #include "./headers/messageQueue.h"
+#include "./headers/ANSI.h"
+#include "./headers/colorPrintf.h"
 #include "const.h"
 
 int egzamin(int msgID);
@@ -31,7 +33,7 @@ int main() {
     int semIDKomA = allocSemaphore(sem_KomisjaA, 2, IPC_CREAT | 0666);
     signalSemaphore(semIDKomA, 1, 1); // signal -> Student is ready.
     waitSemaphore(semIDKomA, 0, 0); // wait until Komisja A is ready. 
-    printf("%d - Student - Jestem w komisji A\n", getpid());
+    colorPrintf(CYAN, "%d - Student - Jestem w komisji A \x1b[0m\n", getpid());
 
     int msgID_A = attachMessageQueue(msg_FILENAME_A); // communicate with komisja A
     float finalGrade = egzamin(msgID_A);

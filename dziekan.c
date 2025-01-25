@@ -15,8 +15,10 @@
 #include "./headers/gradeMessage.h"
 #include "./headers/list.h"
 #include "./headers/namedFIFO.h"
-#include "const.h"
 #include "./headers/dziekan-list.h"
+#include "./headers/ANSI.h"
+#include "./headers/colorPrintf.h"
+#include "const.h"
 
 pid_t studentPID, komisjaPID;
 
@@ -39,7 +41,7 @@ int main() {
     // Generate a random number and convert it into a char.
     int randomNum = rand() % num_studies;
     block[0] = randomNum;
-    printf("Writing: %d\n", block[0]);
+    colorPrintf(GREEN, "Writing: %d \x1b[0m \n", block[0]);
 
     signalSemaphore(semID, 0, 160);
     
@@ -115,9 +117,9 @@ void setUp() {
             break;
     }
 
-    if ((rand() % 20) == 0) {
-        printf("Dziekanat-- FIRE ALARM!");
-        kill(studentPID, SIGUSR1);
-        kill(komisjaPID, SIGUSR1); 
-    }
+//    if ((rand() % 20) == 0) {
+//        printf("Dziekanat-- FIRE ALARM!");
+//        kill(studentPID, SIGUSR1);
+//        kill(komisjaPID, SIGUSR1); 
+//    }
 }
