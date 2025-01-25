@@ -55,8 +55,10 @@ int main() {
     dziekanFinalGrade->findStudentAndGrade = findStudentAndGradeD;
     dziekanFinalGrade->calculateFinalGrades = calculateFinalGradesD;
     dziekanFinalGrade->printList = printListD;
+    dziekanFinalGrade->printListFile = printListFileD;
     dziekanFinalGrade->cleanGradeList = cleanGradeListD;
     dziekanFinalGrade->statistics = statisticsD;
+    dziekanFinalGrade->statisticsFile = statisticsFileD;
 
     while (readFIFO(fileDesk, &grade, sizeof(GradeData)) != -1) {
         dziekanFinalGrade->addStudent(dziekanFinalGrade, grade.studentID);
@@ -73,9 +75,24 @@ int main() {
         dziekanFinalGrade->findStudentAndGrade(dziekanFinalGrade, grade.studentID, grade.grades, grade.finalGrade, 2);
     }
 
+
+
     dziekanFinalGrade->calculateFinalGrades(dziekanFinalGrade);
-    dziekanFinalGrade->printList(dziekanFinalGrade);
-    dziekanFinalGrade->statistics(dziekanFinalGrade);
+
+    FILE *result = fopen("result.txt", "w"); 
+    dziekanFinalGrade->printListFile(dziekanFinalGrade, result);
+    dziekanFinalGrade->statisticsFile(dziekanFinalGrade, result);
+    fclose(result);
+
+    int logSemID = allocSemaphore(LOG_FILE, 1, IPC_CREAT | 0666);
+    waitSemaphore(logSemID, 0, 0);
+    FILE* logs = fopen(LOG_FILE, "a");
+    dziekanFinalGrade->statisticsFile(dziekanFinalGrade, logs);
+    fclose(logs);
+    signalSemaphore(logSemID, 0, 1);
+    destroySemaphore(logSemID, 0);
+     
+
     dziekanFinalGrade->cleanGradeList(dziekanFinalGrade);
     free(dziekanFinalGrade);
 
@@ -92,6 +109,12 @@ int main() {
 
 void setUp() {
     studentPID = fork();
+    if ((rand() % 20) == 0) {
+        printf("Dziekanat-- FIRE ALARM!");
+        kill(studentPID, SIGUSR1);
+        kill(komisjaPID, SIGUSR1); 
+        return;
+    }
     switch(studentPID) {
         case -1:
             printf("There was an error!");
@@ -117,9 +140,4 @@ void setUp() {
             break;
     }
 
-//    if ((rand() % 20) == 0) {
-//        printf("Dziekanat-- FIRE ALARM!");
-//        kill(studentPID, SIGUSR1);
-//        kill(komisjaPID, SIGUSR1); 
-//    }
 }

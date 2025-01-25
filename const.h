@@ -20,6 +20,8 @@
 #define fifo_PATH_A "/home/michaelmoses/Desktop/SO/Projekt/fifoA"
 #define fifo_PATH_B "/home/michaelmoses/Desktop/SO/Projekt/fifoB"
 
+#define LOG_FILE "log.txt"
+
 #define num_studies 5
 
 

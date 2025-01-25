@@ -24,7 +24,8 @@ int codes[10];
 StudentGrade* head;
 int main(int argc, char **argv) {
     srand(time(NULL));
-    
+    int enteredStudents = 0;
+
     char* filename = (char *)malloc(sizeof(char)*6);
     if (filename == NULL) {
         perror("malloc filename.");
@@ -75,6 +76,7 @@ int main(int argc, char **argv) {
                 return 1;
             }
         }
+        enteredStudents++;
 
         signalSemaphore(semID, 0, 1);
 
@@ -137,6 +139,12 @@ int main(int argc, char **argv) {
     }
     colorPrintf(MAGENTA, "End %s \x1b[0m \n", argv[1]);
 
+    int logSemID = allocSemaphore(LOG_FILE, 1, IPC_CREAT | 0666);
+    waitSemaphore(logSemID, 0, 0);
+    FILE* logs = fopen(LOG_FILE, "a");
+    fprintf(logs, "The number of students that have come to committee %s equal to %d\n", argv[1], enteredStudents);
+    fclose(logs);
+    signalSemaphore(logSemID, 0, 1);
 
     char* pipePath = malloc(sizeof(char)*45);
     if (pipePath == NULL) {

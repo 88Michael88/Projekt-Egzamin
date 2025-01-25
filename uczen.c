@@ -39,23 +39,31 @@ int main() {
     float finalGrade = egzamin(msgID_A);
 
     if (finalGrade == 2.0) { // Student failed.
-        printf("%d - Student - Nie zdalem.\n", getpid());
+        colorPrintf(RED, "%d - Student - Nie zdalem. \x1b[0m \n", getpid());
+        
         exit(0);
     }
-    printf("%d - Student - Zdalem.\n", getpid());
+    colorPrintf(YELLOW, "%d - Student - Zdalem. \x1b[0m \n", getpid());
 
     detachMemoryBlock((void*)block);
 
     int semIDKomB = allocSemaphore(sem_KomisjaB, 2, IPC_CREAT | 0666);
     signalSemaphore(semIDKomB, 1, 1); // signal -> Student is ready.
     waitSemaphore(semIDKomB, 0, 0); // wait until komisja B is ready.
-    printf("%d - Student - Jestem w komisji B\n", getpid());
+    colorPrintf(CYAN, "%d - Student - Jestem w komisji B \x1b[0m \n", getpid());
 
     int msgID_B = attachMessageQueue(msg_FILENAME_B); // communicate with komisja B
     finalGrade = egzamin(msgID_B);
 
+    if (finalGrade == 2.0) { // Student failed.
+        colorPrintf(RED, "%d - Student - Nie zdalem. \x1b[0m \n", getpid());
+        
+        exit(0);
+    }
+    colorPrintf(YELLOW, "%d - Student - Zdalem. \x1b[0m \n", getpid());
 
-    printf("%d I have finished B\n", getpid());
+
+    colorPrintf(CYAN, "%d I have finished B \x1b[0m \n", getpid());
     return 0;
 }
 

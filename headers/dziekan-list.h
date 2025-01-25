@@ -18,15 +18,19 @@ typedef struct dziekanGradeListDL {
     int (*addStudent)(struct dziekanGradeListDL*, int);
     void (*calculateFinalGrades)(struct dziekanGradeListDL*);
     void (*printList)(struct dziekanGradeListDL*);
+    void (*printListFile)(struct dziekanGradeListDL*, FILE*);
     void (*cleanGradeList)(struct dziekanGradeListDL* head);
     void (*statistics)(struct dziekanGradeListDL* head);
+    void (*statisticsFile)(struct dziekanGradeListDL* head, FILE*);
 } DziekanFinalGrade;
 
 void findStudentAndGradeD(DziekanFinalGrade* head, int studentID, float* grades, float finalGrade, int komisja);
 int addStudentD(DziekanFinalGrade* head, int studentID); 
 void calculateFinalGradesD(DziekanFinalGrade* head);
 void printListD(DziekanFinalGrade* head);
+void printListFileD(DziekanFinalGrade* head, FILE* results);
 void cleanGradeListD(DziekanFinalGrade* head);
 void statisticsD(DziekanFinalGrade* head);
+void statisticsFileD(DziekanFinalGrade* head, FILE* results);
 
 #endif // __d_list_double_link_h__

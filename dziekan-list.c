@@ -142,3 +142,38 @@ void statisticsD(DziekanFinalGrade* head) {
     printf("Highest Grade %.1f\n", fhighestGrade);
     printf("\n\n");
 }
+
+void printListFileD(DziekanFinalGrade* head, FILE* results) {
+    DziekanFinalGrade* next = head;
+    while (next != NULL) {
+        fprintf(results, "StudentID : %d\n", next->studentID);
+        fprintf(results, "Komisja A : %.2f\n", next->finalA);
+        fprintf(results, "Komisja B : %.2f\n", next->finalB);
+        fprintf(results, "FinalGrade : %.2f\n", next->finalGrade);
+        fprintf(results, "\n\n");
+        next = next->next;
+    }
+}
+
+void statisticsFileD(DziekanFinalGrade* head, FILE* results) {
+    DziekanFinalGrade* next = head;
+    int numberOfStudents = 0, passedStudents = 0, highestGrade = 0;
+    while (next != NULL) {
+        numberOfStudents++;
+        int finalGrade = next->finalGrade * 10;
+        if (finalGrade != 20) {
+            passedStudents++; 
+        }
+        if (highestGrade < finalGrade) {
+            highestGrade = finalGrade;
+        }
+        next = next->next;
+    }
+
+    float fhighestGrade = highestGrade / 10.0;
+    fprintf(results, "Number Of Students: %d\n", numberOfStudents);
+    fprintf(results, "Number Of Passed Students : %d\n", passedStudents);
+    fprintf(results, "Highest Grade %.1f\n", fhighestGrade);
+    fprintf(results, "\n\n");
+}
+
