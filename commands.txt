@@ -1,0 +1,2 @@
+ipcrm -a && sleep .2 && clear && make clear && make all
+clear && ps -a | grep "dziekan\|student\|komisja\|komisjaT\|uczen" && ps -a | grep "uczen" | wc -l && ls fifo*

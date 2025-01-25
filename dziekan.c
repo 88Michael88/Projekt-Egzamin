@@ -16,7 +16,7 @@
 #include "list.h"
 #include "namedFIFO.h"
 #include "const.h"
-
+#include "dziekan-list.h"
 
 pid_t studentPID, komisjaPID;
 
@@ -48,11 +48,17 @@ int main() {
     int fileDesk = openFIFOForRead(fifo_PATH_A);
 
     struct GradeData grade;
+    DziekanFinalGrade* dziekanFinalGrade = malloc(sizeof(DziekanFinalGrade));
+    dziekanFinalGrade->addStudent = addStudentD;
+    dziekanFinalGrade->findStudentAndGrade = findStudentAndGradeD;
+    dziekanFinalGrade->calculateFinalGrades = calculateFinalGradesD;
+    dziekanFinalGrade->printList = printListD;
+    dziekanFinalGrade->cleanGradeList = cleanGradeListD;
+    dziekanFinalGrade->statistics = statisticsD;
 
     while (readFIFO(fileDesk, &grade, sizeof(GradeData)) != -1) {
-        printf("StudentID: %d,\n", grade.studentID);
-        printf("Grades: %.1f %.1f %.1f,\n", grade.grades[0], grade.grades[1], grade.grades[2]);
-        printf("Final Grade: %.2f.\n", grade.finalGrade);
+        dziekanFinalGrade->addStudent(dziekanFinalGrade, grade.studentID);
+        dziekanFinalGrade->findStudentAndGrade(dziekanFinalGrade, grade.studentID, grade.grades, grade.finalGrade, 1);
     }
 
     cleanupFIFO(fifo_PATH_A);
@@ -62,10 +68,14 @@ int main() {
     fileDesk = openFIFOForRead(fifo_PATH_B);
 
     while (readFIFO(fileDesk, &grade, sizeof(GradeData)) != -1) {
-        printf("StudentID: %d,\n", grade.studentID);
-        printf("Grades: %.1f %.1f %.1f,\n", grade.grades[0], grade.grades[1], grade.grades[2]);
-        printf("Final Grade: %.2f.\n", grade.finalGrade);
+        dziekanFinalGrade->findStudentAndGrade(dziekanFinalGrade, grade.studentID, grade.grades, grade.finalGrade, 2);
     }
+
+    dziekanFinalGrade->calculateFinalGrades(dziekanFinalGrade);
+    dziekanFinalGrade->printList(dziekanFinalGrade);
+    dziekanFinalGrade->statistics(dziekanFinalGrade);
+    dziekanFinalGrade->cleanGradeList(dziekanFinalGrade);
+    free(dziekanFinalGrade);
 
     cleanupFIFO(fifo_PATH_B);
     wait(NULL);

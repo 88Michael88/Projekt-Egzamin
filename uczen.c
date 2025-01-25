@@ -37,10 +37,10 @@ int main() {
     float finalGrade = egzamin(msgID_A);
 
     if (finalGrade == 2.0) { // Student failed.
-        printf("%d - Student - Nie zdalem.");
+        printf("%d - Student - Nie zdalem.\n", getpid());
         exit(0);
     }
-    printf("%d - Student - Zdalem.");
+    printf("%d - Student - Zdalem.\n", getpid());
 
     detachMemoryBlock((void*)block);
 
