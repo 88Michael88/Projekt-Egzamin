@@ -1,6 +1,8 @@
 #ifndef __consts_h__
 #define __consts_h__
 
+#define SIZE_STUDENT_ARRAY 6
+
 #define shm_FILENAME "shmem"
 #define shm_SIZE 128 
 

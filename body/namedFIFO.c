@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "./headers/namedFIFO.h"
+#include "../headers/namedFIFO.h"
 
 #define IPC_RESULT_ERROR (-1)
 
