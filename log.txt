@@ -1,9 +1,9 @@
-The number of students that came was equal to 113
-The number of students that have come to committee A equal to 25
-The number of students that have gone home is equal to 113
-The number of students that have come to committee B equal to 22
-Number Of Students: 25
-Number Of Passed Students : 17
+The number of students that came was equal to 86
+The number of students that have come to committee A equal to 18
+The number of students that have gone home is equal to 86
+The number of students that have come to committee B equal to 15
+Number Of Students: 18
+Number Of Passed Students : 11
 Highest Grade 4.5
 
 

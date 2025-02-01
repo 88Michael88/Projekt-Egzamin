@@ -1,155 +1,113 @@
-StudentID : 44635
-Komisja A : 4.00
-Komisja B : 5.00
-FinalGrade : 4.50
-
-
-StudentID : 44633
-Komisja A : 4.50
-Komisja B : 4.00
-FinalGrade : 4.50
-
-
-StudentID : 44637
-Komisja A : 5.00
+StudentID : 3590
+Komisja A : 3.50
 Komisja B : 2.00
 FinalGrade : 2.00
 
 
-StudentID : 44662
-Komisja A : 4.00
-Komisja B : 3.50
-FinalGrade : 4.00
+StudentID : 3596
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
 
 
-StudentID : 44657
+StudentID : 3598
 Komisja A : 4.50
-Komisja B : 4.00
-FinalGrade : 4.50
-
-
-StudentID : 44665
-Komisja A : 2.00
-Komisja B : 0.00
-FinalGrade : 2.00
-
-
-StudentID : 44694
-Komisja A : 4.00
-Komisja B : 2.00
-FinalGrade : 2.00
-
-
-StudentID : 44682
-Komisja A : 3.50
-Komisja B : 5.00
-FinalGrade : 4.50
-
-
-StudentID : 44685
-Komisja A : 2.00
-Komisja B : 0.00
-FinalGrade : 2.00
-
-
-StudentID : 44672
-Komisja A : 4.00
-Komisja B : 5.00
-FinalGrade : 4.50
-
-
-StudentID : 44691
-Komisja A : 2.00
-Komisja B : 0.00
-FinalGrade : 2.00
-
-
-StudentID : 44681
-Komisja A : 4.00
-Komisja B : 5.00
-FinalGrade : 4.50
-
-
-StudentID : 44710
-Komisja A : 4.00
-Komisja B : 3.50
-FinalGrade : 4.00
-
-
-StudentID : 44711
-Komisja A : 3.50
-Komisja B : 4.50
-FinalGrade : 4.00
-
-
-StudentID : 44704
-Komisja A : 4.00
 Komisja B : 4.50
 FinalGrade : 4.50
 
 
-StudentID : 44701
-Komisja A : 5.00
+StudentID : 3620
+Komisja A : 4.50
 Komisja B : 2.00
 FinalGrade : 2.00
 
 
-StudentID : 44727
-Komisja A : 3.50
-Komisja B : 2.00
+StudentID : 3609
+Komisja A : 2.00
+Komisja B : 0.00
 FinalGrade : 2.00
 
 
-StudentID : 44721
+StudentID : 3623
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 3616
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 3632
+Komisja A : 4.00
+Komisja B : 3.50
+FinalGrade : 4.00
+
+
+StudentID : 3631
 Komisja A : 5.00
 Komisja B : 4.00
 FinalGrade : 4.50
 
 
-StudentID : 44722
+StudentID : 3637
 Komisja A : 3.50
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 3636
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 3660
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 3664
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 3656
+Komisja A : 4.00
 Komisja B : 2.00
 FinalGrade : 2.00
 
 
-StudentID : 44745
-Komisja A : 3.50
-Komisja B : 3.50
-FinalGrade : 3.50
+StudentID : 3661
+Komisja A : 4.00
+Komisja B : 2.00
+FinalGrade : 2.00
 
 
-StudentID : 44742
-Komisja A : 4.50
-Komisja B : 3.50
-FinalGrade : 4.00
-
-
-StudentID : 44733
+StudentID : 3667
 Komisja A : 4.00
 Komisja B : 4.00
 FinalGrade : 4.00
 
 
-StudentID : 44759
-Komisja A : 3.50
-Komisja B : 3.50
-FinalGrade : 3.50
-
-
-StudentID : 44765
+StudentID : 3671
 Komisja A : 4.00
 Komisja B : 4.00
 FinalGrade : 4.00
 
 
-StudentID : 44763
+StudentID : 3680
 Komisja A : 4.00
 Komisja B : 4.00
 FinalGrade : 4.00
 
 
-Number Of Students: 25
-Number Of Passed Students : 17
+Number Of Students: 18
+Number Of Passed Students : 11
 Highest Grade 4.5
 
 
