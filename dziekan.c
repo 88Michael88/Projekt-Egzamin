@@ -44,13 +44,26 @@ int main() {
     }
 
     // Write to the shared memory. 
-    int randomNum = rand() % SIZE_STUDENT_ARRAY;
-    memoryBlock[0] = randomNum;
+    int studentFacultyIndex = rand() % SIZE_STUDENT_ARRAY;
+    memoryBlock[0] = studentFacultyIndex;
     colorPrintf(GREEN, "Writing: %d \x1b[0m \n", memoryBlock[0]);
     
     // Allow the Uczens to read the message. 
     signalSemaphore(semID, 0, allStudents);
 
+    switch (fork()) {
+        case -1:
+            perror(errors[FORK]);
+            break;
+        case 0:
+            // Get the number of only the selected student that are going to take the Egzam.
+            execlp("./komisja", "./komisja", arg[studentFacultyIndex], NULL); 
+            break;
+        default:
+            break;
+    }
+
+    wait(NULL);
     wait(NULL);
 
     destroySemaphore(semID, 0);
