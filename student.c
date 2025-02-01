@@ -3,10 +3,29 @@
 #include <errno.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <pthread.h>
 #include "error.h"
 #include "const.h"
 
 int generateIndex(int numberOfIndexes, int* array);
+
+// The clear up function for the thread.
+void* cleanUpStudents(void* numberOfStudents) {
+    int countedStudents = 0;
+    while (1) { // Make sure you have all the children.
+        if (wait(NULL) == -1 && countedStudents < *(int *)numberOfStudents) { 
+            continue;
+        } else { 
+            countedStudents++;
+        }
+        
+        if (countedStudents == *(int *)numberOfStudents) {
+            break;
+        }
+    }
+
+    return (void*)NULL;
+}
 
 int main(int argc, char* argv[]) {
     int numberOfAllStudents = 0;
@@ -38,8 +57,18 @@ int main(int argc, char* argv[]) {
             free(uczenData);
         }
     }
+    
+    pthread_t thread;
+    // Create a cleaning thread.
+    if (pthread_create(&thread, NULL, cleanUpStudents, &numberOfAllStudents) != 0) {
+        perror("Failed to create thread");
+        return 1;
+    }
 
+    int rotations = 0;
     for (int i = 0; i < numberOfAllStudents; i++) { // Generate the needed Uczens.
+        rotations++;
+  
         kierunek = generateIndex(SIZE_STUDENT_ARRAY, numberOfStudents); // Pick from what faculty will the student be from.
         numberOfStudents[kierunek]--;
         poprawia = (!(rand() % 20)); // Randomly check if he is redoing the egzam.
@@ -60,10 +89,16 @@ int main(int argc, char* argv[]) {
             default:
                 break;
         }
+
+        if (rotations >= rand() % 30) {
+            sleep(rand() % 2);
+            rotations = 0;
+        }
     }
 
-    for (int i = 0; i < numberOfAllStudents; i++) {
-        wait(NULL);
+    if (pthread_join(thread, NULL) != 0) {
+        perror("Failed to join thread");
+        return 1;
     }
 
     return 0;
