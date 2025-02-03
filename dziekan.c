@@ -21,6 +21,8 @@ void getTheFIFOData(char* FIFO_PATH, DziekanFinalGrade* dziekanFinalGrade, int k
 
 int main() {
     srand(time(NULL)); 
+    createFIFO(fifo_PATH_A);
+    createFIFO(fifo_PATH_B);
     // Allocate the needed array for the number of students in every faculty.
     int* numberOfStudents = malloc(sizeof(int) * SIZE_STUDENT_ARRAY);
     if (numberOfStudents == NULL) { // Error handling.
@@ -70,8 +72,8 @@ int main() {
     // Get the data from Komisja B.
     getTheFIFOData(fifo_PATH_B, dziekanFinalGrade, 2);
 
-    dziekanFinalGrade->calculateFinalGrades(dziekanFinalGrade);
-    dziekanFinalGrade->printList(dziekanFinalGrade);
+    // dziekanFinalGrade->calculateFinalGrades(dziekanFinalGrade);
+    // dziekanFinalGrade->printList(dziekanFinalGrade);
 
     wait(NULL);
     wait(NULL);

@@ -87,12 +87,15 @@ int main(int argc, char* argv[]) {
     strcpy(pipePath, fifo_PATH);
     strcat(pipePath, argv[1]);
 
+    /*
     // Create the needed named path for communication.
     createFIFO(pipePath);
+    */
     
     int fileDesk = openFIFOForWrite(pipePath);
 
     while (egzamTaken < numberOfStudents) {
+
         for (int i = 0; i < 2; i++) {
             threadNumber[i] = i + 2;
             if (pthread_create(&thread[i], NULL, osobaZkomisji, &threadNumber[i]) != 0) {
