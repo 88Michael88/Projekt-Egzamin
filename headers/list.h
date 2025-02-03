@@ -21,6 +21,7 @@ typedef struct studentGradeListDL {
     float (*calculateFinalGrade)(struct studentGradeListDL*, int);
     void (*printQueue)(struct studentGradeListDL*);
     void (*cleanGradeQueue)(struct studentGradeListDL* head);
+    struct studentGradeListDL (*getNewlyAddedStudent)(struct studentGradeListDL* head);
 } StudentGrade;
 
 void findStudentAndGrade(StudentGrade* head, int studentID, int komisjaID, float grade);
@@ -28,5 +29,6 @@ int addStudent(StudentGrade* head, int studentID);
 float calculateFinalGrade(StudentGrade* head, int studentID);
 void printQueue(StudentGrade* head);
 void cleanGradeQueue(StudentGrade* head);
+StudentGrade getNewlyAddedStudent(StudentGrade* head);
 
 #endif // __list_double_link_h__

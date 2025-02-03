@@ -126,3 +126,11 @@ void cleanGradeQueue(StudentGrade* head) {
     }
     head->next = NULL;
 }
+
+StudentGrade getNewlyAddedStudent(StudentGrade* head) {
+    StudentGrade* newStudent = head;
+    while(newStudent->next != NULL) {
+        newStudent = newStudent->next;
+    }
+    return *newStudent;
+}

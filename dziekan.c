@@ -64,15 +64,13 @@ int main() {
     dziekanFinalGrade->statistics = statisticsD;
     dziekanFinalGrade->statisticsFile = statisticsFileD;
 
-    createFIFO(fifo_PATH_A);
-    createFIFO(fifo_PATH_B);
-
     // Get the data from Komisja A.
     getTheFIFOData(fifo_PATH_A, dziekanFinalGrade, 1);
-
+    
     // Get the data from Komisja B.
     getTheFIFOData(fifo_PATH_B, dziekanFinalGrade, 2);
 
+    dziekanFinalGrade->calculateFinalGrades(dziekanFinalGrade);
     dziekanFinalGrade->printList(dziekanFinalGrade);
 
     wait(NULL);
@@ -100,6 +98,8 @@ void getTheFIFOData(char* FIFO_PATH, DziekanFinalGrade* dziekanFinalGrade, int k
         dziekanFinalGrade->addStudent(dziekanFinalGrade, grade.studentID);
         dziekanFinalGrade->findStudentAndGrade(dziekanFinalGrade, grade.studentID, grade.grades, grade.finalGrade, komisja);
     }
+
+    cleanupFIFO(FIFO_PATH);
 }
 
 void setupKomisja(int* memoryBlock, char** arg) {
