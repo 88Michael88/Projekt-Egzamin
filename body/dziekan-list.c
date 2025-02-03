@@ -3,6 +3,15 @@
 #include "./headers/dziekan-list.h"
 
 int addStudentD(DziekanFinalGrade* head, int studentID) {
+    DziekanFinalGrade* exists = head;
+    while (exists != NULL) {
+        if (exists->studentID == studentID) {
+            return 1;
+        }
+        exists = exists->next;
+    }
+
+
     if (head->studentID == 0) {
         head->studentID = studentID;
         head->previous = NULL;
@@ -47,11 +56,13 @@ void findStudentAndGradeD(DziekanFinalGrade* head, int studentID, float* grades,
     }
 
     if (komisja == 1) { // Komisja A
+        // printf("A: %d:  %f, %f, %f\n", studentID, grades[0], grades[1], grades[2]);
         next->finalA = finalGrade;
         for (int i = 0; i < 3; i++) {
             next->grades[i] = grades[i];
         }
     } else { // Komisja B
+        // printf("B: %d:  %f, %f, %f\n", studentID, grades[0], grades[1], grades[2]);
         next->finalB = finalGrade;
         for (int i = 3; i < 6; i++) {
             next->grades[i] = grades[i];

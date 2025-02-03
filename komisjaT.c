@@ -13,6 +13,7 @@
 #include "./headers/list.h"
 #include "./headers/ANSI.h"
 #include "./headers/colorPrintf.h"
+#include "./headers/namedFIFO.h"
 
 void* osobaZkomisji(void* msgID);
 float gradeGeneration();
@@ -26,6 +27,8 @@ int main(int argc, char* argv[]) {
     printf("%s %s\n", argv[1], argv[2]);
     int numberOfStudents = 0;
     sscanf(argv[2], "%d", &numberOfStudents);
+
+    srand((time(NULL) + (20 * *argv[1])));
 
     for (int i = 4; i < 13; i++) {
         codes[i-4] = i;
@@ -96,15 +99,38 @@ int main(int argc, char* argv[]) {
         finalEgzamGrade.messageType = codeForFinalGrade;
         finalEgzamGrade.finalGrade = finalGrade;
         sendMessageQueue(msgID, (void*)&finalEgzamGrade, sizeof(struct egzamFinalGrade) - sizeof(finalEgzamGrade.messageType), 0);
-        colorPrintf(MAGENTA, "Komisja%s Sent the Final Grade: %ld, %f \x1b[0m\n", argv[1], finalEgzamGrade.messageType, finalEgzamGrade.finalGrade);
+//        colorPrintf(MAGENTA, "Komisja%s Sent the Final Grade: %ld, %f \x1b[0m\n", argv[1], finalEgzamGrade.messageType, finalEgzamGrade.finalGrade);
 
         signalSemaphore(semID, 0, 1);
         egzamTaken++;
     }
     printf("I have finished %s\n", argv[1]);
-    
-    sleep(2); // You have to wait until the student reads the last important data.
 
+    char* pipePath = malloc(sizeof(char)*45);
+    if (pipePath == NULL) {
+        perror("malloc pipePath.");
+        return -1;
+    }
+
+    strcpy(pipePath, fifo_PATH);
+    strcat(pipePath, argv[1]);
+    int fileDesk = openFIFOForWrite(pipePath);
+
+    struct GradeData grade;
+    StudentGrade* next;
+    next = head;
+
+    while (next != NULL) {
+        grade.studentID = next->studentID;
+        memcpy(grade.grades, next->grades, sizeof(float) * 3);
+        grade.finalGrade = next->finalGrade;
+        writeFIFO(fileDesk, &grade, sizeof(GradeData));
+        next = next->next;
+    }
+
+    head->cleanGradeQueue(head);
+
+    free(head);
     free(semFileName);
     free(mesQFileName);
 
@@ -115,10 +141,11 @@ int main(int argc, char* argv[]) {
 }
 
 int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
+    (void)argv;
         // receive hello 
         struct egzamHello hello;  
         receiveMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), threadID + 1, 0); 
-        colorPrintf(MAGENTA, "Komisja%s Receive Hello: %ld, %d, %d, %ld \x1b[0m\n", argv, hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
+ //       colorPrintf(MAGENTA, "Komisja%s Receive Hello: %ld, %d, %d, %ld \x1b[0m\n", argv, hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
 
         // send hello
         int currentStudentID = hello.studentID;
@@ -126,7 +153,7 @@ int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
         hello.threadID = getpid();
         hello.codeForQuestion = codes[0 + threadID];
         sendMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), 0);
-        colorPrintf(MAGENTA, "Komisja%s Sent Hello: %ld, %d, %d, %ld \x1b[0m\n", argv, hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
+//        colorPrintf(MAGENTA, "Komisja%s Sent Hello: %ld, %d, %d, %ld \x1b[0m\n", argv, hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
 
         head->addStudent(head, currentStudentID);
         
@@ -137,12 +164,12 @@ int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
         question.codeForAnswer = codes[3 + threadID]; 
         question.question = (rand() % 100);
         sendMessageQueue(msgID, (void*)&question, sizeof(struct egzamQuestion) - sizeof(question.messageType), 0);
-        colorPrintf(MAGENTA, "Komisja%s Sent a Question: %ld, %ld, %d, %d \x1b[0m\n", argv, question.messageType, question.threadID, question.codeForAnswer, question.question);
+//        colorPrintf(MAGENTA, "Komisja%s Sent a Question: %ld, %ld, %d, %d \x1b[0m\n", argv, question.messageType, question.threadID, question.codeForAnswer, question.question);
 
         // receive egzamAnswer
         struct egzamAnswer answer;
         receiveMessageQueue(msgID, (void*)&answer, sizeof(struct egzamAnswer) - sizeof(answer.messageType), question.codeForAnswer, 0);  
-        colorPrintf(MAGENTA, "Komisja%s Received an Answer: %ld, %d, %d \x1b[0m\n", argv, answer.messageType, answer.codeForGrade, answer.answer);
+//        colorPrintf(MAGENTA, "Komisja%s Received an Answer: %ld, %d, %d \x1b[0m\n", argv, answer.messageType, answer.codeForGrade, answer.answer);
         // send egzamGrade
         struct egzamGrade grade;
         grade.messageType = answer.codeForGrade;
@@ -154,7 +181,7 @@ int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
         head->findStudentAndGrade(head, currentStudentID, threadID, grade.grade);
 
         sendMessageQueue(msgID, (void*)&grade, sizeof(struct egzamGrade) - sizeof(grade.messageType), 0);
-        colorPrintf(MAGENTA, "Komisja%s Sent the Grade: %ld, %ld, %f, %d \x1b[0m\n", argv, grade.messageType, grade.threadID, grade.grade, grade.codeForFinalGrade);
+//        colorPrintf(MAGENTA, "Komisja%s Sent the Grade: %ld, %ld, %f, %d \x1b[0m\n", argv, grade.messageType, grade.threadID, grade.grade, grade.codeForFinalGrade);
 
         return currentStudentID;
 }
