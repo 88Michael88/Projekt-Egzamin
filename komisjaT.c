@@ -5,6 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
+#include <signal.h>
 #include "const.h"
 #include "error.h"
 #include "./headers/semaphore.h"
@@ -15,14 +16,29 @@
 #include "./headers/colorPrintf.h"
 #include "./headers/namedFIFO.h"
 
+
+volatile sig_atomic_t exitSignal = 0;
+
 void* osobaZkomisji(void* msgID);
 float gradeGeneration();
 int semID, msgID;
 int codes[10];
 int egzamin(int* codeForFinalGrade, char* argv, int threadID);
 
+// Signal handler to set the flag when a signal is received
+void signalHandler(int sig) {
+    if (sig == SIGUSR1) {
+        exitSignal = 1;
+    }
+}
+
 StudentGrade* head;
 int main(int argc, char* argv[]) {
+    // Set up the signal for the Dziekan to terminate the Komisja when it has finished.
+    if (signal(SIGUSR1, signalHandler) == SIG_ERR) {
+        perror(errors[SIGNAL_HANDLER]);
+    }
+
     (void)argc;
     printf("%s %s\n", argv[1], argv[2]);
     int numberOfStudents = 0;
@@ -56,8 +72,9 @@ int main(int argc, char* argv[]) {
     strcpy(mesQFileName, msg_FILENAME);
     strcat(mesQFileName, argv[1]);
 
-    semID = allocSemaphore(semFileName, 1, IPC_CREAT | IPC_CREAT | 0666);
+    semID = allocSemaphore(semFileName, 2, IPC_CREAT | IPC_CREAT | 0666);
     initSemaphore(semID, 0, 0);
+    initSemaphore(semID, 1, 0);
 
     msgID = attachMessageQueue(mesQFileName);
 
@@ -87,14 +104,14 @@ int main(int argc, char* argv[]) {
     strcpy(pipePath, fifo_PATH);
     strcat(pipePath, argv[1]);
 
-    /*
-    // Create the needed named path for communication.
-    createFIFO(pipePath);
-    */
-    
     int fileDesk = openFIFOForWrite(pipePath);
 
     while (egzamTaken < numberOfStudents) {
+
+        while (valueSemaphore(semID, 1) == 0 && exitSignal == 0) {};
+        if (exitSignal == 1) {
+            break;
+        }
 
         for (int i = 0; i < 2; i++) {
             threadNumber[i] = i + 2;

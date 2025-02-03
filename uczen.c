@@ -33,15 +33,17 @@ int main(int argc, char* argv[]) {
     
     //printf("%d - I am in! Kierunek %d, Poprawia %d\n", getpid(), kierunek, poprawia);
 
-    int semKomisjaAID = allocSemaphore(sem_KomisjaA, 1, IPC_CREAT | 0666);
+    int semKomisjaAID = allocSemaphore(sem_KomisjaA, 2, IPC_CREAT | 0666);
 
- //   printf("%d - I am in the waiting room for komisja A.\n", getpid());
+    printf("%d - I am in the waiting room for komisja A.\n", getpid());
     waitSemaphore(semKomisjaAID, 0, 0);
- //   printf("%d - I am in the egzam room for komisja A.\n", getpid());
+    printf("%d - I am in the egzam room for komisja A.\n", getpid());
 
-    int msgID_A = attachMessageQueue(msg_FILENAME_A); // communicate with komisja A
+    int msgID_A = attachMessageQueue(msg_FILENAME_A); // communicate with komisja A.
+    signalSemaphore(semKomisjaAID, 1, 1);
     float finalGrade = egzamin(msgID_A);
- //   printf("%d - I have left the egzam room for komisja A.\n", getpid());
+    waitSemaphore(semKomisjaAID, 1, 0);
+    printf("%d - I have left the egzam room for komisja A.\n", getpid());
 
 
     if (finalGrade == 2.0) { // Student failed.
@@ -50,15 +52,17 @@ int main(int argc, char* argv[]) {
  //       exit(0);
     }
 
-    int semKomisjaBID = allocSemaphore(sem_KomisjaB, 1, IPC_CREAT | 0666);
+    int semKomisjaBID = allocSemaphore(sem_KomisjaB, 2, IPC_CREAT | 0666);
 
- //   printf("%d - I am in the waiting room for komisja B.\n", getpid());
+    printf("%d - I am in the waiting room for komisja B.\n", getpid());
     waitSemaphore(semKomisjaBID, 0, 0);
- //   printf("%d - I am in the egzam room for komisja B.\n", getpid());
+    printf("%d - I am in the egzam room for komisja B.\n", getpid());
 
     int msgID_B = attachMessageQueue(msg_FILENAME_B); // communicate with komisja B
+    signalSemaphore(semKomisjaBID, 1, 1);
     finalGrade = egzamin(msgID_B);
- //   printf("%d - I have left the egzam room for komisja B.\n", getpid());
+    waitSemaphore(semKomisjaBID, 1, 0);
+    printf("%d - I have left the egzam room for komisja B.\n", getpid());
 
     if (finalGrade == 2.0) { // Student failed.
         //colorPrintf(RED, "%d - Student - Nie zdalem. \x1b[0m \n", getpid());

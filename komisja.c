@@ -10,7 +10,9 @@ void setupKomisje(char* type, char* numberOfStudents);
 
 int main(int argc, char* argv[]) {
     (void)argc;
-    setupKomisje("A", argv[1]);
+    // TODO: 
+    // Create the shared memory with the Dziekanat Process.
+    setupKomisje("A", argv[1]); // Pass in the shared memory block.
     setupKomisje("B", argv[1]);
 
     wait(NULL);
@@ -38,5 +40,7 @@ void setupKomisje(char* type, char* numberOfStudents) {
         default:
             break;
     }
+
+    // save the childs pid to the shared memory. 
 
 }
