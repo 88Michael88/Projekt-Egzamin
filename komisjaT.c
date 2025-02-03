@@ -18,6 +18,7 @@ void* osobaZkomisji(void* msgID);
 float gradeGeneration();
 int semID, msgID;
 int codes[10];
+int egzamin(int* codeForFinalGrade, char* argv, int threadID);
 
 StudentGrade* head;
 int main(int argc, char* argv[]) {
@@ -49,14 +50,13 @@ int main(int argc, char* argv[]) {
     strcpy(mesQFileName, msg_FILENAME);
     strcat(mesQFileName, argv[1]);
 
-    int semID = allocSemaphore(semFileName, 1, IPC_CREAT | IPC_CREAT | 0666);
+    semID = allocSemaphore(semFileName, 1, IPC_CREAT | IPC_CREAT | 0666);
     initSemaphore(semID, 0, 0);
 
     msgID = attachMessageQueue(mesQFileName);
 
-
     int egzamTaken = 0;
-    signalSemaphore(semID, 0, 2);
+    signalSemaphore(semID, 0, 1);
 
     head = malloc(sizeof(StudentGrade));
     // Assign function pointers
@@ -78,47 +78,8 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // receive hello
-        struct egzamHello hello;  
-        int currentStudentID = 0;
-        receiveMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), 1, 0);
-        colorPrintf(MAGENTA, "Komisja%s Receive Hello: %ld, %d, %d, %ld \x1b[0m\n", argv[1], hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
-
-        // send hello
-        currentStudentID = hello.studentID;
-        hello.messageType = currentStudentID;
-        hello.threadID = getpid();
-        hello.codeForQuestion = codes[0];
-        sendMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), 0);
-        colorPrintf(MAGENTA, "Komisja%s Sent Hello: %ld, %d, %d, %ld \x1b[0m\n", argv[1], hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
-
-        head->addStudent(head, currentStudentID);
-        
-        // send question
-        struct egzamQuestion question;
-        question.messageType = codes[0];
-        question.threadID = getpid();  
-        question.codeForAnswer = codes[3];
-        question.question = (rand() % 100);
-        sendMessageQueue(msgID, (void*)&question, sizeof(struct egzamQuestion) - sizeof(question.messageType), 0);
-        colorPrintf(MAGENTA, "Komisja%s Sent a Question: %ld, %ld, %d, %d \x1b[0m\n", argv[1], question.messageType, question.threadID, question.codeForAnswer, question.question);
-
-        // receive egzamAnswer
-        struct egzamAnswer answer;
-        receiveMessageQueue(msgID, (void*)&answer, sizeof(struct egzamAnswer) - sizeof(answer.messageType), question.codeForAnswer, 0);  
-        colorPrintf(MAGENTA, "Komisja%s Received an Answer: %ld, %d, %d \x1b[0m\n", argv[1], answer.messageType, answer.codeForGrade, answer.answer);
-
-        // send egzamGrade
-        struct egzamGrade grade;
-        grade.messageType = answer.codeForGrade;
-        grade.threadID = getpid();
-        grade.grade = gradeGeneration();
-        grade.codeForFinalGrade = codes[9];
-
-        head->findStudentAndGrade(head, currentStudentID, 0, grade.grade);
-
-        sendMessageQueue(msgID, (void*)&grade, sizeof(struct egzamGrade) - sizeof(grade.messageType), 0);
-        colorPrintf(MAGENTA, "Komisja%s Sent the Grade: %ld, %ld, %f, %d \x1b[0m\n", argv[1], grade.messageType, grade.threadID, grade.grade, grade.codeForFinalGrade);
+        int codeForFinalGrade = 0;
+        int currentStudentID = egzamin(&codeForFinalGrade, argv[1], 0);
 
         // Wait for the thread to complete
         for (int i = 0; i < 2; i++) {
@@ -132,7 +93,7 @@ int main(int argc, char* argv[]) {
 
         // send egzamFinalGrade
         struct egzamFinalGrade finalEgzamGrade;
-        finalEgzamGrade.messageType = grade.codeForFinalGrade;
+        finalEgzamGrade.messageType = codeForFinalGrade;
         finalEgzamGrade.finalGrade = finalGrade;
         sendMessageQueue(msgID, (void*)&finalEgzamGrade, sizeof(struct egzamFinalGrade) - sizeof(finalEgzamGrade.messageType), 0);
         colorPrintf(MAGENTA, "Komisja%s Sent the Final Grade: %ld, %f \x1b[0m\n", argv[1], finalEgzamGrade.messageType, finalEgzamGrade.finalGrade);
@@ -153,8 +114,57 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
+        // receive hello 
+        struct egzamHello hello;  
+        receiveMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), threadID + 1, 0); 
+        colorPrintf(MAGENTA, "Komisja%s Receive Hello: %ld, %d, %d, %ld \x1b[0m\n", argv, hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
+
+        // send hello
+        int currentStudentID = hello.studentID;
+        hello.messageType = currentStudentID;
+        hello.threadID = getpid();
+        hello.codeForQuestion = codes[0 + threadID];
+        sendMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), 0);
+        colorPrintf(MAGENTA, "Komisja%s Sent Hello: %ld, %d, %d, %ld \x1b[0m\n", argv, hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
+
+        head->addStudent(head, currentStudentID);
+        
+        // send question
+        struct egzamQuestion question;
+        question.messageType = codes[0 + threadID]; 
+        question.threadID = getpid();  
+        question.codeForAnswer = codes[3 + threadID]; 
+        question.question = (rand() % 100);
+        sendMessageQueue(msgID, (void*)&question, sizeof(struct egzamQuestion) - sizeof(question.messageType), 0);
+        colorPrintf(MAGENTA, "Komisja%s Sent a Question: %ld, %ld, %d, %d \x1b[0m\n", argv, question.messageType, question.threadID, question.codeForAnswer, question.question);
+
+        // receive egzamAnswer
+        struct egzamAnswer answer;
+        receiveMessageQueue(msgID, (void*)&answer, sizeof(struct egzamAnswer) - sizeof(answer.messageType), question.codeForAnswer, 0);  
+        colorPrintf(MAGENTA, "Komisja%s Received an Answer: %ld, %d, %d \x1b[0m\n", argv, answer.messageType, answer.codeForGrade, answer.answer);
+        // send egzamGrade
+        struct egzamGrade grade;
+        grade.messageType = answer.codeForGrade;
+        grade.threadID = getpid();
+        grade.grade = gradeGeneration();
+        grade.codeForFinalGrade = codes[9];
+        *codeForFinalGrade = codes[9];
+
+        head->findStudentAndGrade(head, currentStudentID, threadID, grade.grade);
+
+        sendMessageQueue(msgID, (void*)&grade, sizeof(struct egzamGrade) - sizeof(grade.messageType), 0);
+        colorPrintf(MAGENTA, "Komisja%s Sent the Grade: %ld, %ld, %f, %d \x1b[0m\n", argv, grade.messageType, grade.threadID, grade.grade, grade.codeForFinalGrade);
+
+        return currentStudentID;
+}
+
 void* osobaZkomisji(void* threadNumber) {
     (void)threadNumber;
+    int codeForFinalGrade = 0;
+    int currentStudentID = egzamin(&codeForFinalGrade, "C", (*(int *)threadNumber - 1));
+    (void)codeForFinalGrade;
+    (void)currentStudentID;
     return (void*)NULL;
 }
 

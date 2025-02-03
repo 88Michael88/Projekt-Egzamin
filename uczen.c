@@ -73,52 +73,49 @@ int egzamin(int msgID) {
     // send hello
     struct egzamHello hello[3];
     //unsigned long int threads[3] = {0};
-    //for (int i = 0; i < 3; i++) {
-    hello[0].messageType = 1;
-    hello[0].studentID = getpid();
-    hello[0].codeForQuestion = 0;
-    hello[0].threadID = 0;
-    sendMessageQueue(msgID, &hello[0], sizeof(struct egzamHello) - sizeof(hello[0].messageType), 0);
-    colorPrintf(BLUE, "Uczen Sent Hello: %ld, %d, %d, %ld \x1b[0m\n", hello[0].messageType, hello[0].studentID, hello[0].codeForQuestion, hello[0].threadID);
-    //}
+    for (int i = 0; i < 3; i++) {
+        hello[i].messageType = 1 + i;
+        hello[i].studentID = getpid();
+        hello[i].codeForQuestion = 0;
+        hello[i].threadID = 0;
+        sendMessageQueue(msgID, &hello[i], sizeof(struct egzamHello) - sizeof(hello[i].messageType), 0);
+        colorPrintf(BLUE, "Uczen Sent Hello: %ld, %d, %d, %ld \x1b[0m\n", hello[i].messageType, hello[i].studentID, hello[i].codeForQuestion, hello[i].threadID);
+    }
 
     // receive hello
-    // for (int i = 0; i < 3; i++) {
-    receiveMessageQueue(msgID, &hello[0], sizeof(struct egzamHello) - sizeof(hello[0].messageType), getpid(), 0);
-    colorPrintf(BLUE, "Uczen Receive Hello: %ld, %d, %d, %ld \x1b[0m\n", hello[0].messageType, hello[0].studentID, hello[0].codeForQuestion, hello[0].threadID);
-    //   threads[i] = hello[i].threadID;
-    // }
+    for (int i = 0; i < 3; i++) {
+        receiveMessageQueue(msgID, &hello[i], sizeof(struct egzamHello) - sizeof(hello[i].messageType), getpid(), i);
+        colorPrintf(BLUE, "Uczen Receive Hello: %ld, %d, %d, %ld \x1b[0m\n", hello[i].messageType, hello[i].studentID, hello[i].codeForQuestion, hello[i].threadID);
+        //   threads[i] = hello[i].threadID;
+    }
 
     // receive question
     struct egzamQuestion question[3]; 
-    //for (int i = 0; i < 3; i++) {
-    receiveMessageQueue(msgID, (void*)&question[0], sizeof(struct egzamQuestion) - sizeof(question[0].messageType), hello[0].codeForQuestion, 0);
-    colorPrintf(BLUE, "Uczen Receive a Question: %ld, %ld, %d, %d \x1b[0m\n", question[0].messageType, question[0].threadID, question[0].codeForAnswer, question[0].question);
-    // }
+    for (int i = 0; i < 3; i++) {
+        receiveMessageQueue(msgID, (void*)&question[i], sizeof(struct egzamQuestion) - sizeof(question[i].messageType), hello[i].codeForQuestion, i);
+        colorPrintf(BLUE, "Uczen Receive a Question: %ld, %ld, %d, %d \x1b[0m\n", question[i].messageType, question[i].threadID, question[i].codeForAnswer, question[i].question);
+    }
 
     // send question
     struct egzamAnswer answer[3];
-    // for (int i = 0; i < 3; i++) {
-    answer[0].messageType = question[0].codeForAnswer;
-    answer[0].codeForGrade = 10 + 0; 
-    answer[0].answer = 6;
-    sendMessageQueue(msgID, &answer[0], sizeof(struct egzamAnswer) - sizeof(answer[0].messageType), 0);
-    // }
-    colorPrintf(BLUE, "Uczen Sent an Answer: %ld, %d, %d \x1b[0m\n", answer[0].messageType, answer[0].codeForGrade, answer[0].answer);
+    for (int i = 0; i < 3; i++) {
+        answer[i].messageType = question[i].codeForAnswer;
+        answer[i].codeForGrade = question[i].codeForAnswer + 3;
+        answer[i].answer = 6;
+        sendMessageQueue(msgID, &answer[i], sizeof(struct egzamAnswer) - sizeof(answer[i].messageType), 0);
+        colorPrintf(BLUE, "Uczen Sent an Answer: %ld, %d, %d \x1b[0m\n", answer[i].messageType, answer[i].codeForGrade, answer[i].answer);
+    }
 
     // receive egzam grade 
     // if failed exit.
     struct egzamGrade grade[3];
     int finalGradeCode;
-    // for (int i = 0; i < 3; i++) {
-    receiveMessageQueue(msgID, (void*)&grade[0], sizeof(struct egzamGrade) - sizeof(grade[0].messageType), answer[0].codeForGrade, 0);
-    colorPrintf(BLUE, "Uczen Receive the Grade: %ld, %ld, %f, %d \x1b[0m\n", grade[0].messageType, grade[0].threadID, grade[0].grade, grade[0].codeForFinalGrade);
-    //printf("Received Grade %.1f\n", grade[i].grade);
-    //    if (grade[i].codeForFinalGrade != 0) {
+    for (int i = 0; i < 3; i++) {
+        receiveMessageQueue(msgID, (void*)&grade[i], sizeof(struct egzamGrade) - sizeof(grade[i].messageType), answer[i].codeForGrade, i);
+        colorPrintf(BLUE, "Uczen Receive the Grade: %ld, %ld, %f, %d \x1b[0m\n", grade[i].messageType, grade[i].threadID, grade[i].grade, grade[i].codeForFinalGrade);
+    }
     finalGradeCode = grade[0].codeForFinalGrade;
-    //    }
-    // }
-    
+
     struct egzamFinalGrade finalGrade;
     receiveMessageQueue(msgID, (void*)&finalGrade, sizeof(struct egzamFinalGrade) - sizeof(finalGrade.messageType), finalGradeCode, 0);
     colorPrintf(BLUE, "Uczen Receive the Final Grade: %ld, %f \x1b[0m\n", finalGrade.messageType, finalGrade.finalGrade);

@@ -3,6 +3,14 @@
 #include "./headers/list.h"
 
 int addStudent(StudentGrade* head, int studentID) {
+    StudentGrade* exits = head;
+    while(exits != NULL) {
+        if (exits->studentID == studentID) {
+            return 1;
+        }
+        exits = exits->next;
+    }
+        
     if (head->studentID == 0) {
         head->studentID = studentID;
         head->grades[0] = 0;
