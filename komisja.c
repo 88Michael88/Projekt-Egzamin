@@ -7,6 +7,7 @@
 void setupKomisje(char* type, char* numberOfStudents);
 
 int main(int argc, char* argv[]) {
+    (void)argc;
     setupKomisje("A", argv[1]);
     setupKomisje("B", argv[1]);
 
