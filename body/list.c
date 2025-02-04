@@ -70,7 +70,9 @@ void findStudentAndGrade(StudentGrade* head, int studentID, int komisjaID, float
 
 static float normalization(float grade) {
     int newGrade = grade * 10;
-    if (newGrade <= 35) {
+    if (newGrade == 30) {
+        return 3.0;
+    } else if (newGrade <= 35) {
         return 3.5;
     } else if (newGrade <= 40) {
         return 4.0;

@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
         numberOfStudents[kierunek]--;
         poprawia = (!(rand() % 20)); // Randomly check if he is redoing the egzam.
         if (poprawia == 1) { // If he is what grade did he have?
-            poprawia = (rand() % 4) + 1;
+            poprawia = (rand() % 3) + 3;
         }
         sprintf(uczenData[0], "%d", kierunek);
         sprintf(uczenData[1], "%d", poprawia);

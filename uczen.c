@@ -10,7 +10,7 @@
 #include "./headers/colorPrintf.h"
 #include "./headers/ANSI.h"
 
-int egzamin(int msgID);
+int egzamin(int msgID, float poprawia);
 
 int main(int argc, char* argv[]) {
     int kierunek = argc; // This is so that I don't a warning about not using all the variables.
@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
 
     int msgID_A = attachMessageQueue(msg_FILENAME_A); // communicate with komisja A.
     signalSemaphore(semKomisjaAID, 1, 1);
-    float finalGrade = egzamin(msgID_A);
+    float finalGrade = egzamin(msgID_A, poprawia);
     waitSemaphore(semKomisjaAID, 1, 0);
     printf("%d - I have left the egzam room for komisja A.\n", getpid());
 
@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
 
     int msgID_B = attachMessageQueue(msg_FILENAME_B); // communicate with komisja B
     signalSemaphore(semKomisjaBID, 1, 1);
-    finalGrade = egzamin(msgID_B);
+    finalGrade = egzamin(msgID_B, 0);
     waitSemaphore(semKomisjaBID, 1, 0);
     printf("%d - I have left the egzam room for komisja B.\n", getpid());
 
@@ -73,9 +73,7 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-int egzamin(int msgID) {
-    (void)msgID;
-
+int egzamin(int msgID, float poprawia) {
     // send hello
     struct egzamHello hello[3];
     //unsigned long int threads[3] = {0};
@@ -84,9 +82,19 @@ int egzamin(int msgID) {
         hello[i].studentID = getpid();
         hello[i].codeForQuestion = 0;
         hello[i].threadID = 0;
+        hello[i].poprawia = poprawia;
         sendMessageQueue(msgID, &hello[i], sizeof(struct egzamHello) - sizeof(hello[i].messageType), 0);
         colorPrintf(BLUE, "Uczen Sent Hello: %ld, %d, %d, %ld \x1b[0m\n", hello[i].messageType, hello[i].studentID, hello[i].codeForQuestion, hello[i].threadID);
     }
+
+    if (poprawia != 0) {
+        struct egzamFinalGrade finalGrade;
+        receiveMessageQueue(msgID, (void*)&finalGrade, sizeof(struct egzamFinalGrade) - sizeof(finalGrade.messageType), 16, 0);
+        colorPrintf(BLUE, "Uczen Receive the Final Grade: %ld, %f \x1b[0m\n", finalGrade.messageType, finalGrade.finalGrade);
+
+        return finalGrade.finalGrade;
+    }
+
 
     // receive hello
     for (int i = 0; i < 3; i++) {

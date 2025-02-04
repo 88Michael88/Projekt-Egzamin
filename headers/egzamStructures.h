@@ -5,6 +5,7 @@ struct egzamHello {
     long int messageType; // 1 - Main, 2 - Thread1, 3 - Thread2
     int studentID;
     int codeForQuestion;
+    float poprawia;
     unsigned long int threadID;
 };
 

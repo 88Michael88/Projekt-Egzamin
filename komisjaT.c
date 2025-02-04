@@ -208,8 +208,17 @@ int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
         receiveMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), threadID + 1, 0); 
         colorPrintf(MAGENTA, "Komisja%s Receive Hello: %ld, %d, %d, %ld \x1b[0m\n", argv, hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
 
-        // send hello
+        // Check if the Uczen is redoing the Egzam.
         int currentStudentID = hello.studentID;
+        if (hello.poprawia != 0) {
+            printf("POPRAWIA: %f\n", hello.poprawia);
+            head->addStudent(head, currentStudentID);
+            head->findStudentAndGrade(head, currentStudentID, threadID, hello.poprawia);
+            *codeForFinalGrade = codes[9];
+            return currentStudentID;
+        }
+
+        // send hello
         hello.messageType = currentStudentID;
         hello.threadID = getpid();
         hello.codeForQuestion = codes[0 + threadID];
