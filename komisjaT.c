@@ -111,8 +111,11 @@ int main(int argc, char* argv[]) {
 
     while (egzamTaken < numberOfStudents) {
 
+        signalSemaphore(semCountID, 0, 1);
         while (valueSemaphore(semID, 1) == 0 && exitSignal == 0) {} 
         if (exitSignal == 1) {
+            printf("I am leaving\n");
+            signalSemaphore(semCountID, 0, 1);
             break;
         }
 
@@ -152,7 +155,6 @@ int main(int argc, char* argv[]) {
         signalSemaphore(semID, 0, 1);
         egzamTaken++;
 
-        signalSemaphore(semCountID, 0, 1);
         // printf("egzamTaken: %d, semCountID: %d\n", egzamTaken, valueSemaphore(semCountID, 0));
     }
     printf("I have finished %s\n", argv[1]);
@@ -167,24 +169,27 @@ int main(int argc, char* argv[]) {
     // Give it the corect name that depends on the Komisja.
     strcpy(pipePath, fifo_PATH);
     strcat(pipePath, argv[1]);
-
-    int fileDesk = openFIFOForWrite(pipePath);
-
-    struct GradeData grade;
-    StudentGrade* next;
-    next = head;
+    int fileDesk = 0;
+    if (egzamTaken != 0) {
+        fileDesk = openFIFOForWrite(pipePath);
+    }
 
     deleteMessageQueue(msgID);
     destroySemaphore(semID, 0);
     destroySemaphore(semID, 1);
     destroySemaphore(semCountID, 1);
 
-    while (next != NULL) {
-        grade.studentID = next->studentID;
-        memcpy(grade.grades, next->grades, sizeof(float) * 3);
-        grade.finalGrade = next->finalGrade;
-        writeFIFO(fileDesk, &grade, sizeof(GradeData));
-        next = next->next;
+    if (egzamTaken != 0) {
+        struct GradeData grade;
+        StudentGrade* next;
+        next = head;
+        while (next != NULL) {
+            grade.studentID = next->studentID;
+            memcpy(grade.grades, next->grades, sizeof(float) * 3);
+            grade.finalGrade = next->finalGrade;
+            writeFIFO(fileDesk, &grade, sizeof(GradeData));
+            next = next->next;
+        }
     }
 
     head->cleanGradeQueue(head);
@@ -253,6 +258,7 @@ void* osobaZkomisji(void* threadNumber) {
 }
 
 float gradeGeneration() {
+//    return 2.0;
     int grade = (rand() % 20);
     if ((!grade) == 1) {
         return 2.0;

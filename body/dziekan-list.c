@@ -194,16 +194,17 @@ int komisjaStatistics(DziekanFinalGrade* head, int komisjaID) {
     while(newStudent->next != NULL) {
         all++;
         if (komisjaID == 1) { // Komisja A
-            if (newStudent->finalA == 2) {
+            if (newStudent->finalA == 2.0) {
                 failed++;
             }
         } else { // Komisja B
-            if (newStudent->finalB == 2) {
+            if (newStudent->finalB == 2.0) {
                 failed++;
             }
         }
         newStudent = newStudent->next;
     }
     passed = all - failed;
+    printf("passed: %d, failed: %d, all: %d\n", passed, failed, all);
     return passed;
 }

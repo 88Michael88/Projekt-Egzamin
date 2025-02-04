@@ -19,7 +19,6 @@ int main(int argc, char* argv[]) {
     sscanf(argv[0], "%d", &kierunek);
     sscanf(argv[1], "%d", &poprawia);
 
-
     // Add the semaphore so that you could go into the shared memory.
     int semSharedMemoryID = allocSemaphore(sem_FILENAME, 1, IPC_CREAT | 0666);
 

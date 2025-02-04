@@ -94,12 +94,22 @@ int main() {
     // Wait for the semaphore to reach the correct number of students.
     int semCountBID = allocSemaphore(sem_COUNT_KOMISJA_B, 1, IPC_CREAT | 0666);
     printf("semaphore value: %d, passed: %d\n", valueSemaphore(semCountBID, 0), passed);
-    while (valueSemaphore(semCountBID, 0) <= (passed)) {
-//        printf("%d <= %d\n", valueSemaphore(semCountBID, 0), (passed));
+        printf("Here! %d\n", __LINE__);
+    while (valueSemaphore(semCountBID, 0) <= (passed)) {}
+
+    if (valueSemaphore(semCountBID, 0) == 1 && passed == 0) {
+        kill(komisjaBPID, SIGUSR1); 
+        //break;
     }
 
-    // Get the data from Komisja B.
-    getTheFIFOData(fifo_PATH_B, dziekanFinalGrade, 2, komisjaBPID, passed, 1);
+    printf("Here! %d\n", __LINE__);
+    if (!(valueSemaphore(semCountBID, 0) == 1 && passed == 0)) {
+        printf("Here! %d\n", __LINE__);
+        // Get the data from Komisja B.
+        getTheFIFOData(fifo_PATH_B, dziekanFinalGrade, 2, komisjaBPID, passed, 1);
+        printf("Here! %d\n", __LINE__);
+    }
+        printf("Here! %d\n", __LINE__);
 
     dziekanFinalGrade->calculateFinalGrades(dziekanFinalGrade);
     dziekanFinalGrade->statistics(dziekanFinalGrade);
