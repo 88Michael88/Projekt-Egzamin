@@ -188,3 +188,22 @@ void statisticsFileD(DziekanFinalGrade* head, FILE* results) {
     fprintf(results, "\n\n");
 }
 
+int komisjaStatistics(DziekanFinalGrade* head, int komisjaID) { 
+    int all = 0, passed = 0, failed = 0;
+    DziekanFinalGrade* newStudent = head;
+    while(newStudent->next != NULL) {
+        all++;
+        if (komisjaID == 1) { // Komisja A
+            if (newStudent->finalA == 2) {
+                failed++;
+            }
+        } else { // Komisja B
+            if (newStudent->finalB == 2) {
+                failed++;
+            }
+        }
+        newStudent = newStudent->next;
+    }
+    passed = all - failed;
+    return passed;
+}

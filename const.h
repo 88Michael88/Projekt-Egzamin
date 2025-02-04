@@ -6,11 +6,19 @@
 #define shm_FILENAME "shmem"
 #define shm_SIZE 128 
 
+#define shm_KOMISJA "shmemKom"
+#define shm_KOMISJA_SIZE 64
+
 #define sem_FILENAME "semaf"
 
 #define sem_Komisja "sem"
 #define sem_KomisjaA "semA"
 #define sem_KomisjaB "semB"
+#define sem_KOMISJA "semKOM"
+
+#define sem_COUNT_KOMISJA "count"
+#define sem_COUNT_KOMISJA_A "countA"
+#define sem_COUNT_KOMISJA_B "countB"
 
 #define msg_FILENAME "msgq"
 

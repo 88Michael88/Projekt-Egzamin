@@ -22,6 +22,7 @@ typedef struct dziekanGradeListDL {
     void (*cleanGradeList)(struct dziekanGradeListDL* head);
     void (*statistics)(struct dziekanGradeListDL* head);
     void (*statisticsFile)(struct dziekanGradeListDL* head, FILE*);
+    int (*komisjaStatistics)(struct dziekanGradeListDL* head, int);
 } DziekanFinalGrade;
 
 void findStudentAndGradeD(DziekanFinalGrade* head, int studentID, float* grades, float finalGrade, int komisja);
@@ -32,5 +33,6 @@ void printListFileD(DziekanFinalGrade* head, FILE* results);
 void cleanGradeListD(DziekanFinalGrade* head);
 void statisticsD(DziekanFinalGrade* head);
 void statisticsFileD(DziekanFinalGrade* head, FILE* results);
+int komisjaStatistics(DziekanFinalGrade* head, int komisjaID);
 
 #endif // __d_list_double_link_h__

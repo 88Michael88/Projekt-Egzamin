@@ -25,6 +25,8 @@ int semID, msgID;
 int codes[10];
 int egzamin(int* codeForFinalGrade, char* argv, int threadID);
 
+char ARG;
+
 // Signal handler to set the flag when a signal is received
 void signalHandler(int sig) {
     if (sig == SIGUSR1) {
@@ -46,9 +48,23 @@ int main(int argc, char* argv[]) {
     sscanf(argv[2], "%d", &numberOfStudents);
     sscanf(argv[3], "%d", &parentPID);
     printf("Parent PID: %d\n", parentPID);
+    ARG = *argv[1];
 
     srand((time(NULL) + (20 * *argv[1])));
 
+    // Create the samaphore file name to keep track of the number of students that have came to the Komisja.
+    char* semCountName = malloc(sizeof(char) * 7);
+    if (semCountName == NULL) { // Error handling.
+        perror(errors[MEMORY_ALLOCATION]);
+    }
+
+    strcpy(semCountName, sem_COUNT_KOMISJA); 
+    strcat(semCountName, argv[1]);
+
+    int semCountID = allocSemaphore(semCountName, 1, IPC_CREAT | 0666);
+    initSemaphore(semCountID, 0, 0);
+
+    // Set up the message codes.
     for (int i = 4; i < 13; i++) {
         codes[i-4] = i;
     }
@@ -93,22 +109,9 @@ int main(int argc, char* argv[]) {
     int threadNumber[3];
     pthread_t thread[2];
 
-    // Create the named pipe file path name. 
-    char* pipePath = malloc(sizeof(char)*45);
-    if (pipePath == NULL) { // Error handling.
-        perror("malloc pipePath.");
-        return -1;
-    }
-
-    // Give it the corect name that depends on the Komisja.
-    strcpy(pipePath, fifo_PATH);
-    strcat(pipePath, argv[1]);
-
-    int fileDesk = openFIFOForWrite(pipePath);
-
     while (egzamTaken < numberOfStudents) {
 
-        while (valueSemaphore(semID, 1) == 0 && exitSignal == 0) {};
+        while (valueSemaphore(semID, 1) == 0 && exitSignal == 0) {} 
         if (exitSignal == 1) {
             break;
         }
@@ -133,45 +136,72 @@ int main(int argc, char* argv[]) {
         }
 
         float finalGrade = head->calculateFinalGrade(head, currentStudentID); 
-        StudentGrade newStudent = head->getNewlyAddedStudent(head);
-        
-        GradeData grade;
-        grade.studentID = newStudent.studentID;
-        memcpy(grade.grades, newStudent.grades, sizeof(newStudent.grades));
-        grade.finalGrade = newStudent.finalGrade;
 
         // send egzamFinalGrade
         struct egzamFinalGrade finalEgzamGrade;
         finalEgzamGrade.messageType = codeForFinalGrade;
         finalEgzamGrade.finalGrade = finalGrade;
         sendMessageQueue(msgID, (void*)&finalEgzamGrade, sizeof(struct egzamFinalGrade) - sizeof(finalEgzamGrade.messageType), 0);
-//        colorPrintf(MAGENTA, "Komisja%s Sent the Final Grade: %ld, %f \x1b[0m\n", argv[1], finalEgzamGrade.messageType, finalEgzamGrade.finalGrade);
+        colorPrintf(MAGENTA, "Komisja%s Sent the Final Grade: %ld, %f \x1b[0m\n", argv[1], finalEgzamGrade.messageType, finalEgzamGrade.finalGrade);
 
+        //printf("1) semaphore value! : %d %s\n", valueSemaphore(semID, 1), argv[1]);
+        while (valueSemaphore(semID, 1) == 1) {
+        //    printf("2) semaphore value! : %d %s\n", valueSemaphore(semID, 1), argv[1]);
+        //    printf("egzamTaken: %d, semCountID: %d\n", egzamTaken, valueSemaphore(semCountID, 0));
+        }
         signalSemaphore(semID, 0, 1);
         egzamTaken++;
 
-        writeFIFO(fileDesk, &grade, sizeof(GradeData));
+        signalSemaphore(semCountID, 0, 1);
+        // printf("egzamTaken: %d, semCountID: %d\n", egzamTaken, valueSemaphore(semCountID, 0));
     }
     printf("I have finished %s\n", argv[1]);
+
+    // Create the named pipe file path name. 
+    char* pipePath = malloc(sizeof(char)*45);
+    if (pipePath == NULL) { // Error handling.
+        perror("malloc pipePath.");
+        return -1;
+    }
+
+    // Give it the corect name that depends on the Komisja.
+    strcpy(pipePath, fifo_PATH);
+    strcat(pipePath, argv[1]);
+
+    int fileDesk = openFIFOForWrite(pipePath);
+
+    struct GradeData grade;
+    StudentGrade* next;
+    next = head;
+
+    deleteMessageQueue(msgID);
+    destroySemaphore(semID, 0);
+    destroySemaphore(semID, 1);
+    destroySemaphore(semCountID, 1);
+
+    while (next != NULL) {
+        grade.studentID = next->studentID;
+        memcpy(grade.grades, next->grades, sizeof(float) * 3);
+        grade.finalGrade = next->finalGrade;
+        writeFIFO(fileDesk, &grade, sizeof(GradeData));
+        next = next->next;
+    }
 
     head->cleanGradeQueue(head);
 
     free(head);
     free(semFileName);
     free(mesQFileName);
-
-    deleteMessageQueue(msgID);
-    destroySemaphore(semID, 0);
+    free(semCountName);
 
     return 0;
 }
 
 int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
-    (void)argv;
         // receive hello 
         struct egzamHello hello;  
         receiveMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), threadID + 1, 0); 
-//        colorPrintf(MAGENTA, "Komisja%s Receive Hello: %ld, %d, %d, %ld \x1b[0m\n", argv, hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
+        colorPrintf(MAGENTA, "Komisja%s Receive Hello: %ld, %d, %d, %ld \x1b[0m\n", argv, hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
 
         // send hello
         int currentStudentID = hello.studentID;
@@ -179,7 +209,7 @@ int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
         hello.threadID = getpid();
         hello.codeForQuestion = codes[0 + threadID];
         sendMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), 0);
- //       colorPrintf(MAGENTA, "Komisja%s Sent Hello: %ld, %d, %d, %ld \x1b[0m\n", argv, hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
+        colorPrintf(MAGENTA, "Komisja%s Sent Hello: %ld, %d, %d, %ld \x1b[0m\n", argv, hello.messageType, hello.studentID, hello.codeForQuestion, hello.threadID);
 
         head->addStudent(head, currentStudentID);
         
@@ -190,12 +220,13 @@ int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
         question.codeForAnswer = codes[3 + threadID]; 
         question.question = (rand() % 100);
         sendMessageQueue(msgID, (void*)&question, sizeof(struct egzamQuestion) - sizeof(question.messageType), 0);
- //       colorPrintf(MAGENTA, "Komisja%s Sent a Question: %ld, %ld, %d, %d \x1b[0m\n", argv, question.messageType, question.threadID, question.codeForAnswer, question.question);
+        colorPrintf(MAGENTA, "Komisja%s Sent a Question: %ld, %ld, %d, %d \x1b[0m\n", argv, question.messageType, question.threadID, question.codeForAnswer, question.question);
 
         // receive egzamAnswer
         struct egzamAnswer answer;
         receiveMessageQueue(msgID, (void*)&answer, sizeof(struct egzamAnswer) - sizeof(answer.messageType), question.codeForAnswer, 0);  
- //       colorPrintf(MAGENTA, "Komisja%s Received an Answer: %ld, %d, %d \x1b[0m\n", argv, answer.messageType, answer.codeForGrade, answer.answer);
+        colorPrintf(MAGENTA, "Komisja%s Received an Answer: %ld, %d, %d \x1b[0m\n", argv, answer.messageType, answer.codeForGrade, answer.answer);
+
         // send egzamGrade
         struct egzamGrade grade;
         grade.messageType = answer.codeForGrade;
@@ -207,7 +238,7 @@ int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
         head->findStudentAndGrade(head, currentStudentID, threadID, grade.grade);
 
         sendMessageQueue(msgID, (void*)&grade, sizeof(struct egzamGrade) - sizeof(grade.messageType), 0);
-//        colorPrintf(MAGENTA, "Komisja%s Sent the Grade: %ld, %ld, %f, %d \x1b[0m\n", argv, grade.messageType, grade.threadID, grade.grade, grade.codeForFinalGrade);
+        colorPrintf(MAGENTA, "Komisja%s Sent the Grade: %ld, %ld, %f, %d \x1b[0m\n", argv, grade.messageType, grade.threadID, grade.grade, grade.codeForFinalGrade);
 
         return currentStudentID;
 }
@@ -215,7 +246,7 @@ int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
 void* osobaZkomisji(void* threadNumber) {
     (void)threadNumber;
     int codeForFinalGrade = 0;
-    int currentStudentID = egzamin(&codeForFinalGrade, "C", (*(int *)threadNumber - 1));
+    int currentStudentID = egzamin(&codeForFinalGrade, &ARG, (*(int *)threadNumber - 1));
     (void)codeForFinalGrade;
     (void)currentStudentID;
     return (void*)NULL;

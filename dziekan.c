@@ -1,3 +1,4 @@
+#define _POSIX_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -5,6 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/ipc.h>
+#include <signal.h>
 #include "error.h"
 #include "const.h"
 #include "./headers/namedFIFO.h"
@@ -16,13 +18,15 @@
 #include "./headers/dziekan-list.h"
 
 int setupStudent(int* numberOfStudents, char** arg);
-void setupKomisja(int* block, char** arg);
-void getTheFIFOData(char* FIFO_PATH, DziekanFinalGrade* dziekanFinalGrade, int komisja);
+int setupKomisja(int* memoryBlock, char** arg);
+void getTheFIFOData(char* FIFO_PATH, DziekanFinalGrade* dziekanFinalGrade, int komisja, int komisjaPID, int numberOfStudents, int interupt);
 
 int main() {
     srand(time(NULL)); 
+    // Create the named FIFO, so that the KomsjaA and KomisjaB can send messages to Dziekan.
     createFIFO(fifo_PATH_A);
     createFIFO(fifo_PATH_B);
+    
     // Allocate the needed array for the number of students in every faculty.
     int* numberOfStudents = malloc(sizeof(int) * SIZE_STUDENT_ARRAY);
     if (numberOfStudents == NULL) { // Error handling.
@@ -50,10 +54,21 @@ int main() {
     }
 
     // Set up the komisja process.
-    setupKomisja(memoryBlock, arg);
+    int studentFacultyIndex = setupKomisja(memoryBlock, arg);
 
     // Allow the Uczens to read the message. 
     signalSemaphore(semID, 0, allStudents);
+
+    // Prepare to readthe PIDs of KomisjaA and KomisjaB.
+    int komisjaAPID = 0, komisjaBPID = 0;
+    int* komisjaMemoryBlock = (int*)attachMemoryBlock(shm_KOMISJA, shm_KOMISJA_SIZE);
+    int semKomisjaID = allocSemaphore(sem_KOMISJA, 1, IPC_CREAT | 0666);
+    waitSemaphore(semKomisjaID, 0, 0);
+
+    // Read from the Shared Memory the PIDs of KomisjaA and KomisjaB.
+    komisjaAPID = komisjaMemoryBlock[0];
+    komisjaBPID = komisjaMemoryBlock[1];
+    printf("Dziekan: A pid: %d, B pid: %d \n", komisjaAPID, komisjaBPID);
 
     // Prepare to read the grades from the named FIFO.
     DziekanFinalGrade* dziekanFinalGrade = malloc(sizeof(DziekanFinalGrade));
@@ -65,15 +80,30 @@ int main() {
     dziekanFinalGrade->cleanGradeList = cleanGradeListD;
     dziekanFinalGrade->statistics = statisticsD;
     dziekanFinalGrade->statisticsFile = statisticsFileD;
+    dziekanFinalGrade->komisjaStatistics = komisjaStatistics;
+
+    // Wait for the semaphore to reach the correct number of students.
+    int semCountAID = allocSemaphore(sem_COUNT_KOMISJA_A, 1, IPC_CREAT | 0666);
+    while (valueSemaphore(semCountAID, 0) != (numberOfStudents[studentFacultyIndex])) {}
 
     // Get the data from Komisja A.
-    getTheFIFOData(fifo_PATH_A, dziekanFinalGrade, 1);
-    
-    // Get the data from Komisja B.
-    getTheFIFOData(fifo_PATH_B, dziekanFinalGrade, 2);
+    getTheFIFOData(fifo_PATH_A, dziekanFinalGrade, 1, komisjaAPID, numberOfStudents[studentFacultyIndex], 0);
 
-    // dziekanFinalGrade->calculateFinalGrades(dziekanFinalGrade);
-    // dziekanFinalGrade->printList(dziekanFinalGrade);
+    int passed = dziekanFinalGrade->komisjaStatistics(dziekanFinalGrade, 1);
+    
+    // Wait for the semaphore to reach the correct number of students.
+    int semCountBID = allocSemaphore(sem_COUNT_KOMISJA_B, 1, IPC_CREAT | 0666);
+    printf("semaphore value: %d, passed: %d\n", valueSemaphore(semCountBID, 0), passed);
+    while (valueSemaphore(semCountBID, 0) <= (passed)) {
+//        printf("%d <= %d\n", valueSemaphore(semCountBID, 0), (passed));
+    }
+
+    // Get the data from Komisja B.
+    getTheFIFOData(fifo_PATH_B, dziekanFinalGrade, 2, komisjaBPID, passed, 1);
+
+    dziekanFinalGrade->calculateFinalGrades(dziekanFinalGrade);
+    dziekanFinalGrade->statistics(dziekanFinalGrade);
+    dziekanFinalGrade->printList(dziekanFinalGrade);
 
     wait(NULL);
     wait(NULL);
@@ -88,23 +118,37 @@ int main() {
     return 0;
 }
 
-void getTheFIFOData(char* FIFO_PATH, DziekanFinalGrade* dziekanFinalGrade, int komisja) {
+void getTheFIFOData(char* FIFO_PATH, DziekanFinalGrade* dziekanFinalGrade, int komisja, int komisjaPID, int numberOfStudents, int interupt) {
+    if (interupt) {
+        kill(komisjaPID, SIGUSR1); 
+    }
     // Create a grade struct so that I could read the data from the FIFO.
     struct GradeData grade;
 
     // Open the named FIFO, for Komisja.
     int fileDesk = openFIFOForRead(FIFO_PATH);
 
+    // Keep track of the number of reads.
+    int readCount = 0;
+
     // Read the data from the named FIFO.
     while (readFIFO(fileDesk, &grade, sizeof(GradeData)) != -1) {
         dziekanFinalGrade->addStudent(dziekanFinalGrade, grade.studentID);
         dziekanFinalGrade->findStudentAndGrade(dziekanFinalGrade, grade.studentID, grade.grades, grade.finalGrade, komisja);
-    }
+        // If we have read all the grades then leave.
+        readCount++;
+        if (readCount >= numberOfStudents) {
+            break;
+        }
+    } 
+    // Send the code to the Komisja porcess, so that it leaves the while loop.
+    //(void)komisjaPID;
+    kill(komisjaPID, SIGUSR1); 
 
     cleanupFIFO(FIFO_PATH);
 }
 
-void setupKomisja(int* memoryBlock, char** arg) {
+int setupKomisja(int* memoryBlock, char** arg) {
     // Write to the shared memory. 
     int studentFacultyIndex = rand() % SIZE_STUDENT_ARRAY;
     memoryBlock[0] = studentFacultyIndex;
@@ -121,6 +165,8 @@ void setupKomisja(int* memoryBlock, char** arg) {
         default:
             break;
     }
+
+    return studentFacultyIndex; 
 }
 
 int setupStudent(int* numberOfStudents, char** arg) {

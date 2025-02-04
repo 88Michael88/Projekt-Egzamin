@@ -75,8 +75,6 @@ int main() {
         dziekanFinalGrade->findStudentAndGrade(dziekanFinalGrade, grade.studentID, grade.grades, grade.finalGrade, 2);
     }
 
-
-
     dziekanFinalGrade->calculateFinalGrades(dziekanFinalGrade);
 
     FILE *result = fopen("result.txt", "w"); 
