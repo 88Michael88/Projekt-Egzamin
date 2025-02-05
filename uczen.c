@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/ipc.h>
+#include <signal.h>
 #include "const.h"
 #include "./headers/semaphore.h"
 #include "./headers/sharedMemory.h"
@@ -10,7 +11,20 @@
 #include "./headers/colorPrintf.h"
 #include "./headers/ANSI.h"
 
+volatile sig_atomic_t exitSignal = 0;
+int inEgzam = 0;
 int egzamin(int msgID, float poprawia);
+
+// Signal handler to set the flag when a signal is received
+void signalHandler(int sig) {
+    if (sig == SIGUSR2) {
+        exitSignal = 1;
+    }
+
+    if (inEgzam == 0) {
+        exit(0);
+    }
+}
 
 int main(int argc, char* argv[]) {
     int kierunek = argc; // This is so that I don't a warning about not using all the variables.
@@ -39,19 +53,22 @@ int main(int argc, char* argv[]) {
     printf("%d - I am in the egzam room for komisja A.\n", getpid());
 
     int msgID_A = attachMessageQueue(msg_FILENAME_A); // communicate with komisja A.
+    inEgzam = 1;
     signalSemaphore(semKomisjaAID, 1, 1);
     float finalGrade = egzamin(msgID_A, poprawia);
     waitSemaphore(semKomisjaAID, 1, 0);
+    inEgzam = 0;
     printf("%d - I have left the egzam room for komisja A.\n", getpid());
-
 
     if (finalGrade == 2.0) { // Student failed.
         colorPrintf(RED, "%d - Student - Nie zdalem. \x1b[0m \n", getpid());
-        
         exit(0);
     }
     colorPrintf(YELLOW, "%d - Student - Zdalem. \x1b[0m \n", getpid());
 
+    if (exitSignal == 1) {
+        exit(0);
+    }
     int semKomisjaBID = allocSemaphore(sem_KomisjaB, 2, IPC_CREAT | 0666);
 
     printf("%d - I am in the waiting room for komisja B.\n", getpid());
@@ -59,9 +76,11 @@ int main(int argc, char* argv[]) {
     printf("%d - I am in the egzam room for komisja B.\n", getpid());
 
     int msgID_B = attachMessageQueue(msg_FILENAME_B); // communicate with komisja B
+    inEgzam = 1;
     signalSemaphore(semKomisjaBID, 1, 1);
     finalGrade = egzamin(msgID_B, 0);
     waitSemaphore(semKomisjaBID, 1, 0);
+    inEgzam = 0;
     printf("%d - I have left the egzam room for komisja B.\n", getpid());
 
     if (finalGrade == 2.0) { // Student failed.
@@ -70,6 +89,10 @@ int main(int argc, char* argv[]) {
         exit(0);
     }
     colorPrintf(YELLOW, "%d - Student - Zdalem. \x1b[0m \n", getpid());
+    if (exitSignal == 1) {
+        exit(0);
+    }
+
     return 0;
 }
 

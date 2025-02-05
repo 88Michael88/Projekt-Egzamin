@@ -3,6 +3,8 @@
 
 #define SIZE_STUDENT_ARRAY 6
 
+#define shm_STUDENT_PID "shmStudent"
+
 #define shm_FILENAME "shmem"
 #define shm_SIZE 128 
 

@@ -4,10 +4,21 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <pthread.h>
+#include <signal.h>
+#include "./headers/sharedMemory.h"
 #include "error.h"
 #include "const.h"
 
 int generateIndex(int numberOfIndexes, int* array);
+
+volatile sig_atomic_t exitSignal = 0;
+
+// Signal handler to set the flag when a signal is received
+void signalHandler(int sig) {
+    if (sig == SIGUSR2) {
+        exitSignal = 1;
+    }
+}
 
 // The clear up function for the thread.
 void* cleanUpStudents(void* numberOfStudents) {
@@ -65,8 +76,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    int* studentPIDMemoryBlock = attachMemoryBlock(shm_STUDENT_PID, numberOfAllStudents);
+
     int rotations = 0;
-    for (int i = 0; i < numberOfAllStudents; i++) { // Generate the needed Uczens.
+    for (int i = 0; i < numberOfAllStudents && exitSignal == 0; i++) { // Generate the needed Uczens.
         rotations++;
   
         kierunek = generateIndex(SIZE_STUDENT_ARRAY, numberOfStudents); // Pick from what faculty will the student be from.
@@ -78,7 +91,8 @@ int main(int argc, char* argv[]) {
         sprintf(uczenData[0], "%d", kierunek);
         sprintf(uczenData[1], "%d", poprawia);
 
-        switch (fork()) { 
+        int newPID = fork();
+        switch (newPID) { 
             case -1: 
                 printf("there was an error!");
                 perror(errors[FORK]);
@@ -89,6 +103,7 @@ int main(int argc, char* argv[]) {
             default:
                 break;
         }
+        studentPIDMemoryBlock[i] = newPID;
 
         if (rotations >= rand() % 30) {
             sleep(rand() % 2);
@@ -101,6 +116,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    destroyMemoryBlock(shm_STUDENT_PID);
     return 0;
 }
 

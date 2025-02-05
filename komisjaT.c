@@ -16,7 +16,6 @@
 #include "./headers/colorPrintf.h"
 #include "./headers/namedFIFO.h"
 
-
 volatile sig_atomic_t exitSignal = 0;
 
 void* osobaZkomisji(void* msgID);
@@ -29,7 +28,7 @@ char ARG;
 
 // Signal handler to set the flag when a signal is received
 void signalHandler(int sig) {
-    if (sig == SIGUSR1) {
+    if (sig == SIGUSR1 || sig == SIGUSR2) {
         exitSignal = 1;
     }
 }
@@ -211,7 +210,6 @@ int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
         // Check if the Uczen is redoing the Egzam.
         int currentStudentID = hello.studentID;
         if (hello.poprawia != 0) {
-            printf("POPRAWIA: %f\n", hello.poprawia);
             head->addStudent(head, currentStudentID);
             head->findStudentAndGrade(head, currentStudentID, threadID, hello.poprawia);
             *codeForFinalGrade = codes[9];

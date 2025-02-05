@@ -17,9 +17,30 @@
 #include "./headers/list.h"
 #include "./headers/dziekan-list.h"
 
-int setupStudent(int* numberOfStudents, char** arg);
-int setupKomisja(int* memoryBlock, char** arg);
+int setupStudent(int* numberOfStudents, char** arg, int* studentPID);
+int setupKomisja(int* memoryBlock, char** arg, int* komisjaPID);
 void getTheFIFOData(char* FIFO_PATH, DziekanFinalGrade* dziekanFinalGrade, int komisja, int komisjaPID, int numberOfStudents, int interupt);
+
+void fire(int komisjaAPID, int komisjaBPID, int StudentPID, int KomisjaPID, int allStudents) {
+    int* studentPIDMemoryBlock = attachMemoryBlock(shm_STUDENT_PID, allStudents);
+
+    printf("FIRE!!!!\n");
+    kill(komisjaAPID, SIGUSR2);
+    kill(StudentPID, SIGUSR2);
+    kill(komisjaBPID, SIGUSR2);
+    kill(KomisjaPID, SIGUSR2);
+    for (int i = 0; i < allStudents; i++) {
+        if (studentPIDMemoryBlock[i] == 0) {
+            break;
+        }
+        if (kill(studentPIDMemoryBlock[i], SIGUSR2) == -1) {}
+    }
+
+    detachMemoryBlock(studentPIDMemoryBlock);
+
+    exit(0);
+}
+
 
 int main() {
     srand(time(NULL)); 
@@ -43,8 +64,9 @@ int main() {
     int semID = allocSemaphore(sem_FILENAME, 1, IPC_CREAT | IPC_EXCL | 0666);
     initSemaphore(semID, 0, 0);
 
-    // Set up the student process.
-    int allStudents = setupStudent(numberOfStudents, arg);
+    // Set up the student process and get its PID.
+    int StudentPID = 0;
+    int allStudents = setupStudent(numberOfStudents, arg, &StudentPID);
     
     // Attach to the shared memory so that the Dziekan can send and tell who has the exam.
     int* memoryBlock = (int*)attachMemoryBlock(shm_FILENAME, shm_SIZE);
@@ -53,8 +75,9 @@ int main() {
         return -1;
     }
 
-    // Set up the komisja process.
-    int studentFacultyIndex = setupKomisja(memoryBlock, arg);
+    // Set up the komisja process and get its PID.
+    int KomisjaPID = 0;
+    int studentFacultyIndex = setupKomisja(memoryBlock, arg, &KomisjaPID);
 
     // Allow the Uczens to read the message. 
     signalSemaphore(semID, 0, allStudents);
@@ -68,7 +91,12 @@ int main() {
     // Read from the Shared Memory the PIDs of KomisjaA and KomisjaB.
     komisjaAPID = komisjaMemoryBlock[0];
     komisjaBPID = komisjaMemoryBlock[1];
-    printf("Dziekan: A pid: %d, B pid: %d \n", komisjaAPID, komisjaBPID);
+
+    //if ((!(rand() % 20)) == 1) {
+    if (0) {
+        sleep(10); // Wait a little.
+        fire(komisjaAPID, komisjaBPID, StudentPID, KomisjaPID, allStudents);
+    }
 
     // Prepare to read the grades from the named FIFO.
     DziekanFinalGrade* dziekanFinalGrade = malloc(sizeof(DziekanFinalGrade));
@@ -94,7 +122,6 @@ int main() {
     // Wait for the semaphore to reach the correct number of students.
     int semCountBID = allocSemaphore(sem_COUNT_KOMISJA_B, 1, IPC_CREAT | 0666);
     printf("semaphore value: %d, passed: %d\n", valueSemaphore(semCountBID, 0), passed);
-        printf("Here! %d\n", __LINE__);
     while (valueSemaphore(semCountBID, 0) <= (passed)) {}
 
     if (valueSemaphore(semCountBID, 0) == 1 && passed == 0) {
@@ -102,14 +129,10 @@ int main() {
         //break;
     }
 
-    printf("Here! %d\n", __LINE__);
     if (!(valueSemaphore(semCountBID, 0) == 1 && passed == 0)) {
-        printf("Here! %d\n", __LINE__);
         // Get the data from Komisja B.
         getTheFIFOData(fifo_PATH_B, dziekanFinalGrade, 2, komisjaBPID, passed, 1);
-        printf("Here! %d\n", __LINE__);
     }
-        printf("Here! %d\n", __LINE__);
 
     dziekanFinalGrade->calculateFinalGrades(dziekanFinalGrade);
     dziekanFinalGrade->statistics(dziekanFinalGrade);
@@ -158,13 +181,14 @@ void getTheFIFOData(char* FIFO_PATH, DziekanFinalGrade* dziekanFinalGrade, int k
     cleanupFIFO(FIFO_PATH);
 }
 
-int setupKomisja(int* memoryBlock, char** arg) {
+int setupKomisja(int* memoryBlock, char** arg, int* komisjaPID) {
     // Write to the shared memory. 
     int studentFacultyIndex = rand() % SIZE_STUDENT_ARRAY;
     memoryBlock[0] = studentFacultyIndex;
     colorPrintf(GREEN, "Writing: %d \x1b[0m \n", memoryBlock[0]);
     
-    switch (fork()) {
+    int newPID = fork();
+    switch (newPID) {
         case -1:
             perror(errors[FORK]);
             break;
@@ -175,11 +199,12 @@ int setupKomisja(int* memoryBlock, char** arg) {
         default:
             break;
     }
+    *komisjaPID = newPID;
 
     return studentFacultyIndex; 
 }
 
-int setupStudent(int* numberOfStudents, char** arg) {
+int setupStudent(int* numberOfStudents, char** arg, int* studentPID) {
     int allStudents = 0;
     // Generate the Students number.
     for (int i = 0; i < SIZE_STUDENT_ARRAY; i++) {
@@ -197,7 +222,8 @@ int setupStudent(int* numberOfStudents, char** arg) {
         sprintf(arg[i], "%d", numberOfStudents[i]); // Convert the int to a string.
     }
 
-    switch (fork()) { 
+    int newPID = fork();
+    switch (newPID) { 
         case -1: 
             printf("there was an error!");
             perror(errors[FORK]);
@@ -208,6 +234,7 @@ int setupStudent(int* numberOfStudents, char** arg) {
         default:
             break;
     }
+    *studentPID = newPID;
 
     return allStudents;
 }
