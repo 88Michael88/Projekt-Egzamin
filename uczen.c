@@ -14,14 +14,17 @@
 volatile sig_atomic_t exitSignal = 0;
 int inEgzam = 0;
 int egzamin(int msgID, float poprawia);
+int msgID_A, msgID_B;
+int semSharedMemoryID;
 
 // Signal handler to set the flag when a signal is received
 void signalHandler(int sig) {
     if (sig == SIGUSR2) {
         exitSignal = 1;
-    }
+        deleteMessageQueue(msgID_A);
+        deleteMessageQueue(msgID_B);
+        destroySemaphore(semSharedMemoryID, 0);
 
-    if (inEgzam == 0) {
         exit(0);
     }
 }
@@ -34,7 +37,7 @@ int main(int argc, char* argv[]) {
     sscanf(argv[1], "%d", &poprawia);
 
     // Add the semaphore so that you could go into the shared memory.
-    int semSharedMemoryID = allocSemaphore(sem_FILENAME, 1, IPC_CREAT | 0666);
+    semSharedMemoryID = allocSemaphore(sem_FILENAME, 1, IPC_CREAT | 0666);
 
     waitSemaphore(semSharedMemoryID, 0, 0); // Wait until the the Kierunek is chosen.
     int* block = (int*)attachMemoryBlock(shm_FILENAME, shm_SIZE);
@@ -44,19 +47,21 @@ int main(int argc, char* argv[]) {
         exit(0);
     } 
     
-    //printf("%d - I am in! Kierunek %d, Poprawia %d\n", getpid(), kierunek, poprawia);
+    printf("%d - I am in! Kierunek %d, Poprawia %d\n", getpid(), kierunek, poprawia);
 
-    int semKomisjaAID = allocSemaphore(sem_KomisjaA, 2, IPC_CREAT | 0666);
+    int semKomisjaAID = allocSemaphore(sem_KomisjaA, 3, IPC_CREAT | 0666);
 
     printf("%d - I am in the waiting room for komisja A.\n", getpid());
     waitSemaphore(semKomisjaAID, 0, 0);
     printf("%d - I am in the egzam room for komisja A.\n", getpid());
 
-    int msgID_A = attachMessageQueue(msg_FILENAME_A); // communicate with komisja A.
+    msgID_A = attachMessageQueue(msg_FILENAME_A); // communicate with komisja A.
     inEgzam = 1;
     signalSemaphore(semKomisjaAID, 1, 1);
     float finalGrade = egzamin(msgID_A, poprawia);
+    waitSemaphore(semKomisjaAID, 2, 0);
     waitSemaphore(semKomisjaAID, 1, 0);
+    signalSemaphore(semKomisjaAID, 2, 1);
     inEgzam = 0;
     printf("%d - I have left the egzam room for komisja A.\n", getpid());
 
@@ -64,22 +69,25 @@ int main(int argc, char* argv[]) {
         colorPrintf(RED, "%d - Student - Nie zdalem. \x1b[0m \n", getpid());
         exit(0);
     }
+
     colorPrintf(YELLOW, "%d - Student - Zdalem. \x1b[0m \n", getpid());
 
     if (exitSignal == 1) {
         exit(0);
     }
-    int semKomisjaBID = allocSemaphore(sem_KomisjaB, 2, IPC_CREAT | 0666);
+    int semKomisjaBID = allocSemaphore(sem_KomisjaB, 3, IPC_CREAT | 0666);
 
     printf("%d - I am in the waiting room for komisja B.\n", getpid());
     waitSemaphore(semKomisjaBID, 0, 0);
     printf("%d - I am in the egzam room for komisja B.\n", getpid());
 
-    int msgID_B = attachMessageQueue(msg_FILENAME_B); // communicate with komisja B
+    msgID_B = attachMessageQueue(msg_FILENAME_B); // communicate with komisja B
     inEgzam = 1;
     signalSemaphore(semKomisjaBID, 1, 1);
     finalGrade = egzamin(msgID_B, 0);
+    waitSemaphore(semKomisjaBID, 2, 0);
     waitSemaphore(semKomisjaBID, 1, 0);
+    signalSemaphore(semKomisjaBID, 2, 1);
     inEgzam = 0;
     printf("%d - I have left the egzam room for komisja B.\n", getpid());
 
@@ -149,13 +157,13 @@ int egzamin(int msgID, float poprawia) {
     int finalGradeCode;
     for (int i = 0; i < 3; i++) {
         receiveMessageQueue(msgID, (void*)&grade[i], sizeof(struct egzamGrade) - sizeof(grade[i].messageType), answer[i].codeForGrade, i);
-        colorPrintf(BLUE, "Uczen Receive the Grade: %ld, %ld, %f, %d \x1b[0m\n", grade[i].messageType, grade[i].threadID, grade[i].grade, grade[i].codeForFinalGrade);
+        colorPrintf(BLUE, "Uczen Receive the Grade: %ld, %ld, %.1f, %d \x1b[0m\n", grade[i].messageType, grade[i].threadID, grade[i].grade, grade[i].codeForFinalGrade);
     }
     finalGradeCode = grade[0].codeForFinalGrade;
 
     struct egzamFinalGrade finalGrade;
     receiveMessageQueue(msgID, (void*)&finalGrade, sizeof(struct egzamFinalGrade) - sizeof(finalGrade.messageType), finalGradeCode, 0);
-    colorPrintf(BLUE, "Uczen Receive the Final Grade: %ld, %f \x1b[0m\n", finalGrade.messageType, finalGrade.finalGrade);
+    colorPrintf(BLUE, "Uczen Receive the Final Grade: %ld, %.1f \x1b[0m\n", finalGrade.messageType, finalGrade.finalGrade);
 
     return finalGrade.finalGrade;
 }

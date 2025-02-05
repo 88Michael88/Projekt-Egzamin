@@ -1,113 +1,827 @@
-StudentID : 3590
-Komisja A : 3.50
-Komisja B : 2.00
-FinalGrade : 2.00
+StudentID : 319693
+Komisja A : 3.00
+Komisja B : 4.50
+FinalGrade : 4.00
 
 
-StudentID : 3596
+StudentID : 319690
 Komisja A : 2.00
 Komisja B : 0.00
 FinalGrade : 2.00
 
 
-StudentID : 3598
+StudentID : 319694
+Komisja A : 4.00
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 319716
 Komisja A : 4.50
 Komisja B : 4.50
 FinalGrade : 4.50
 
 
-StudentID : 3620
+StudentID : 319714
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 319728
+Komisja A : 4.00
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+StudentID : 319745
+Komisja A : 4.00
+Komisja B : 3.00
+FinalGrade : 3.50
+
+
+StudentID : 319754
 Komisja A : 4.50
 Komisja B : 2.00
 FinalGrade : 2.00
 
 
-StudentID : 3609
-Komisja A : 2.00
-Komisja B : 0.00
+StudentID : 319771
+Komisja A : 4.50
+Komisja B : 2.00
 FinalGrade : 2.00
 
 
-StudentID : 3623
-Komisja A : 2.00
-Komisja B : 0.00
-FinalGrade : 2.00
-
-
-StudentID : 3616
+StudentID : 319784
 Komisja A : 4.00
-Komisja B : 4.00
-FinalGrade : 4.00
-
-
-StudentID : 3632
-Komisja A : 4.00
-Komisja B : 3.50
-FinalGrade : 4.00
-
-
-StudentID : 3631
-Komisja A : 5.00
-Komisja B : 4.00
+Komisja B : 5.00
 FinalGrade : 4.50
 
 
-StudentID : 3637
+StudentID : 319782
 Komisja A : 3.50
 Komisja B : 4.00
 FinalGrade : 4.00
 
 
-StudentID : 3636
+StudentID : 319805
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 319815
 Komisja A : 4.00
 Komisja B : 4.00
 FinalGrade : 4.00
 
 
-StudentID : 3660
+StudentID : 319818
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 319817
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 319835
+Komisja A : 3.00
+Komisja B : 4.50
+FinalGrade : 4.00
+
+
+StudentID : 319857
+Komisja A : 3.50
+Komisja B : 5.00
+FinalGrade : 4.50
+
+
+StudentID : 319852
+Komisja A : 4.50
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 319847
+Komisja A : 4.00
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+StudentID : 319876
+Komisja A : 5.00
+Komisja B : 4.50
+FinalGrade : 5.00
+
+
+StudentID : 319872
+Komisja A : 3.50
+Komisja B : 3.50
+FinalGrade : 3.50
+
+
+StudentID : 319871
+Komisja A : 3.50
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 319915
+Komisja A : 4.50
+Komisja B : 3.50
+FinalGrade : 4.00
+
+
+StudentID : 319905
+Komisja A : 3.50
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 319960
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 319937
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 319948
+Komisja A : 3.50
+Komisja B : 4.50
+FinalGrade : 4.00
+
+
+StudentID : 319947
+Komisja A : 4.00
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+StudentID : 319957
+Komisja A : 4.50
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 319933
+Komisja A : 3.50
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 319962
+Komisja A : 4.00
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+StudentID : 319995
+Komisja A : 4.00
+Komisja B : 5.00
+FinalGrade : 4.50
+
+
+StudentID : 319997
+Komisja A : 4.50
+Komisja B : 5.00
+FinalGrade : 5.00
+
+
+StudentID : 320016
+Komisja A : 3.50
+Komisja B : 5.00
+FinalGrade : 4.50
+
+
+StudentID : 320048
+Komisja A : 5.00
+Komisja B : 4.50
+FinalGrade : 5.00
+
+
+StudentID : 320049
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320047
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320038
+Komisja A : 4.00
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+StudentID : 320070
 Komisja A : 4.00
 Komisja B : 4.00
 FinalGrade : 4.00
 
 
-StudentID : 3664
+StudentID : 320069
 Komisja A : 4.00
-Komisja B : 4.00
+Komisja B : 3.50
 FinalGrade : 4.00
 
 
-StudentID : 3656
+StudentID : 320103
+Komisja A : 3.00
+Komisja B : 3.00
+FinalGrade : 3.00
+
+
+StudentID : 320107
+Komisja A : 4.00
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+StudentID : 320102
+Komisja A : 3.50
+Komisja B : 4.50
+FinalGrade : 4.00
+
+
+StudentID : 320104
 Komisja A : 4.00
 Komisja B : 2.00
 FinalGrade : 2.00
 
 
-StudentID : 3661
+StudentID : 320135
+Komisja A : 3.50
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320136
 Komisja A : 4.00
 Komisja B : 2.00
 FinalGrade : 2.00
 
 
-StudentID : 3667
+StudentID : 320129
 Komisja A : 4.00
 Komisja B : 4.00
 FinalGrade : 4.00
 
 
-StudentID : 3671
+StudentID : 320127
+Komisja A : 4.50
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320160
+Komisja A : 4.50
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320158
+Komisja A : 4.50
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320162
+Komisja A : 4.00
+Komisja B : 5.00
+FinalGrade : 4.50
+
+
+StudentID : 320188
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320197
+Komisja A : 5.00
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320211
+Komisja A : 4.50
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+StudentID : 320229
+Komisja A : 5.00
+Komisja B : 4.50
+FinalGrade : 5.00
+
+
+StudentID : 320232
+Komisja A : 3.50
+Komisja B : 3.50
+FinalGrade : 3.50
+
+
+StudentID : 320230
+Komisja A : 4.50
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 320225
+Komisja A : 4.50
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 320226
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320255
 Komisja A : 4.00
 Komisja B : 4.00
 FinalGrade : 4.00
 
 
-StudentID : 3680
+StudentID : 320253
+Komisja A : 3.00
+Komisja B : 4.50
+FinalGrade : 4.00
+
+
+StudentID : 320276
+Komisja A : 5.00
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320274
+Komisja A : 5.00
+Komisja B : 4.50
+FinalGrade : 5.00
+
+
+StudentID : 320305
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320314
+Komisja A : 3.50
+Komisja B : 4.50
+FinalGrade : 4.00
+
+
+StudentID : 320340
+Komisja A : 3.00
+Komisja B : 4.00
+FinalGrade : 3.50
+
+
+StudentID : 320354
+Komisja A : 4.50
+Komisja B : 5.00
+FinalGrade : 5.00
+
+
+StudentID : 320369
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320368
+Komisja A : 4.00
+Komisja B : 5.00
+FinalGrade : 4.50
+
+
+StudentID : 320379
+Komisja A : 4.50
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320389
+Komisja A : 4.50
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 320395
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320410
+Komisja A : 4.50
+Komisja B : 5.00
+FinalGrade : 5.00
+
+
+StudentID : 320411
+Komisja A : 4.50
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320425
+Komisja A : 4.00
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 320433
+Komisja A : 3.50
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320450
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320443
+Komisja A : 5.00
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320448
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320472
 Komisja A : 4.00
 Komisja B : 4.00
 FinalGrade : 4.00
 
 
-Number Of Students: 18
-Number Of Passed Students : 11
-Highest Grade 4.5
+StudentID : 320466
+Komisja A : 5.00
+Komisja B : 5.00
+FinalGrade : 5.00
+
+
+StudentID : 320487
+Komisja A : 4.00
+Komisja B : 3.00
+FinalGrade : 3.50
+
+
+StudentID : 320513
+Komisja A : 4.00
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+StudentID : 320512
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320530
+Komisja A : 5.00
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320545
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320539
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320556
+Komisja A : 4.50
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320550
+Komisja A : 5.00
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320559
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320600
+Komisja A : 5.00
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320596
+Komisja A : 4.00
+Komisja B : 3.00
+FinalGrade : 3.50
+
+
+StudentID : 320590
+Komisja A : 4.00
+Komisja B : 5.00
+FinalGrade : 4.50
+
+
+StudentID : 320598
+Komisja A : 4.00
+Komisja B : 3.00
+FinalGrade : 3.50
+
+
+StudentID : 320593
+Komisja A : 4.50
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 320591
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320588
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320594
+Komisja A : 5.00
+Komisja B : 3.00
+FinalGrade : 4.00
+
+
+StudentID : 320585
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320642
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320638
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320660
+Komisja A : 5.00
+Komisja B : 5.00
+FinalGrade : 5.00
+
+
+StudentID : 320659
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320674
+Komisja A : 3.50
+Komisja B : 3.50
+FinalGrade : 3.50
+
+
+StudentID : 320675
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320668
+Komisja A : 3.50
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320667
+Komisja A : 4.00
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+StudentID : 320696
+Komisja A : 5.00
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 320694
+Komisja A : 3.50
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320714
+Komisja A : 4.00
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+StudentID : 320711
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320718
+Komisja A : 5.00
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 320705
+Komisja A : 3.50
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320716
+Komisja A : 4.00
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 320721
+Komisja A : 3.00
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 320759
+Komisja A : 3.50
+Komisja B : 3.50
+FinalGrade : 3.50
+
+
+StudentID : 320753
+Komisja A : 3.50
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320782
+Komisja A : 3.50
+Komisja B : 5.00
+FinalGrade : 4.50
+
+
+StudentID : 320786
+Komisja A : 4.00
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 320780
+Komisja A : 3.00
+Komisja B : 5.00
+FinalGrade : 4.00
+
+
+StudentID : 320781
+Komisja A : 3.50
+Komisja B : 3.00
+FinalGrade : 3.50
+
+
+StudentID : 320779
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320785
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320783
+Komisja A : 4.50
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320799
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320793
+Komisja A : 5.00
+Komisja B : 4.00
+FinalGrade : 4.50
+
+
+StudentID : 320792
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320801
+Komisja A : 4.50
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+StudentID : 320795
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320791
+Komisja A : 4.00
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+StudentID : 320790
+Komisja A : 4.00
+Komisja B : 4.00
+FinalGrade : 4.00
+
+
+StudentID : 320802
+Komisja A : 3.50
+Komisja B : 2.00
+FinalGrade : 2.00
+
+
+StudentID : 320797
+Komisja A : 4.50
+Komisja B : 5.00
+FinalGrade : 5.00
+
+
+StudentID : 320787
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320880
+Komisja A : 2.00
+Komisja B : 0.00
+FinalGrade : 2.00
+
+
+StudentID : 320876
+Komisja A : 5.00
+Komisja B : 4.50
+FinalGrade : 5.00
+
+
+StudentID : 320878
+Komisja A : 4.00
+Komisja B : 4.50
+FinalGrade : 4.50
+
+
+Number Of Students: 137
+Number Of Passed Students : 96
+Highest Grade 5.0
 
 

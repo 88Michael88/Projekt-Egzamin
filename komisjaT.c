@@ -20,10 +20,9 @@ volatile sig_atomic_t exitSignal = 0;
 
 void* osobaZkomisji(void* msgID);
 float gradeGeneration();
-int semID, msgID;
 int codes[10];
 int egzamin(int* codeForFinalGrade, char* argv, int threadID);
-
+int semID, semCountID, msgID;
 char ARG;
 
 // Signal handler to set the flag when a signal is received
@@ -31,12 +30,25 @@ void signalHandler(int sig) {
     if (sig == SIGUSR1 || sig == SIGUSR2) {
         exitSignal = 1;
     }
+
+    if (sig == SIGUSR2) {
+        printf("Success \n");
+        deleteMessageQueue(msgID);
+        destroySemaphore(semID, 0);
+        destroySemaphore(semID, 1);
+        destroySemaphore(semID, 2);
+        destroySemaphore(semCountID, 0);
+    }
 }
 
 StudentGrade* head;
 int main(int argc, char* argv[]) {
     // Set up the signal for the Dziekan to terminate the Komisja when it has finished.
     if (signal(SIGUSR1, signalHandler) == SIG_ERR) {
+        perror(errors[SIGNAL_HANDLER]);
+    }
+    // Set up the signal for the Dziekan to terminate the Komisja when there is a fire.
+    if (signal(SIGUSR2, signalHandler) == SIG_ERR) {
         perror(errors[SIGNAL_HANDLER]);
     }
 
@@ -60,7 +72,7 @@ int main(int argc, char* argv[]) {
     strcpy(semCountName, sem_COUNT_KOMISJA); 
     strcat(semCountName, argv[1]);
 
-    int semCountID = allocSemaphore(semCountName, 1, IPC_CREAT | 0666);
+    semCountID = allocSemaphore(semCountName, 1, IPC_CREAT | 0666);
     initSemaphore(semCountID, 0, 0);
 
     // Set up the message codes.
@@ -87,9 +99,10 @@ int main(int argc, char* argv[]) {
     strcpy(mesQFileName, msg_FILENAME);
     strcat(mesQFileName, argv[1]);
 
-    semID = allocSemaphore(semFileName, 2, IPC_CREAT | IPC_CREAT | 0666);
+    semID = allocSemaphore(semFileName, 3, IPC_CREAT | IPC_CREAT | 0666);
     initSemaphore(semID, 0, 0);
     initSemaphore(semID, 1, 0);
+    initSemaphore(semID, 2, 0); 
 
     msgID = attachMessageQueue(mesQFileName);
 
@@ -109,12 +122,10 @@ int main(int argc, char* argv[]) {
     pthread_t thread[2];
 
     while (egzamTaken < numberOfStudents) {
-
         signalSemaphore(semCountID, 0, 1);
+
         while (valueSemaphore(semID, 1) == 0 && exitSignal == 0) {} 
         if (exitSignal == 1) {
-            printf("I am leaving\n");
-            signalSemaphore(semCountID, 0, 1);
             break;
         }
 
@@ -144,19 +155,21 @@ int main(int argc, char* argv[]) {
         finalEgzamGrade.messageType = codeForFinalGrade;
         finalEgzamGrade.finalGrade = finalGrade;
         sendMessageQueue(msgID, (void*)&finalEgzamGrade, sizeof(struct egzamFinalGrade) - sizeof(finalEgzamGrade.messageType), 0);
-        colorPrintf(MAGENTA, "Komisja%s Sent the Final Grade: %ld, %f \x1b[0m\n", argv[1], finalEgzamGrade.messageType, finalEgzamGrade.finalGrade);
+        //colorPrintf(MAGENTA, "Komisja%s Sent the Final Grade: %ld, %.1f \x1b[0m\n", argv[1], finalEgzamGrade.messageType, finalEgzamGrade.finalGrade);
 
-        //printf("1) semaphore value! : %d %s\n", valueSemaphore(semID, 1), argv[1]);
-        while (valueSemaphore(semID, 1) == 1) {
-        //    printf("2) semaphore value! : %d %s\n", valueSemaphore(semID, 1), argv[1]);
-        //    printf("egzamTaken: %d, semCountID: %d\n", egzamTaken, valueSemaphore(semCountID, 0));
-        }
+
+        signalSemaphore(semID, 2, 1);
+        while (valueSemaphore(semID, 1) == 1) {}
+        waitSemaphore(semID, 2, 1);
         signalSemaphore(semID, 0, 1);
         egzamTaken++;
 
         // printf("egzamTaken: %d, semCountID: %d\n", egzamTaken, valueSemaphore(semCountID, 0));
     }
     printf("I have finished %s\n", argv[1]);
+    if (egzamTaken != 0) {
+        signalSemaphore(semCountID, 0, 1);
+    }
 
     // Create the named pipe file path name. 
     char* pipePath = malloc(sizeof(char)*45);
@@ -176,7 +189,8 @@ int main(int argc, char* argv[]) {
     deleteMessageQueue(msgID);
     destroySemaphore(semID, 0);
     destroySemaphore(semID, 1);
-    destroySemaphore(semCountID, 1);
+    destroySemaphore(semID, 2);
+    destroySemaphore(semCountID, 0);
 
     if (egzamTaken != 0) {
         struct GradeData grade;
@@ -202,6 +216,7 @@ int main(int argc, char* argv[]) {
 }
 
 int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
+    (void)argv;
         // receive hello 
         struct egzamHello hello;  
         receiveMessageQueue(msgID, (void*)&hello, sizeof(struct egzamHello) - sizeof(hello.messageType), threadID + 1, 0); 
@@ -250,7 +265,7 @@ int egzamin(int* codeForFinalGrade, char* argv, int threadID) {
         head->findStudentAndGrade(head, currentStudentID, threadID, grade.grade);
 
         sendMessageQueue(msgID, (void*)&grade, sizeof(struct egzamGrade) - sizeof(grade.messageType), 0);
-        colorPrintf(MAGENTA, "Komisja%s Sent the Grade: %ld, %ld, %f, %d \x1b[0m\n", argv, grade.messageType, grade.threadID, grade.grade, grade.codeForFinalGrade);
+        colorPrintf(MAGENTA, "Komisja%s Sent the Grade: %ld, %ld, %.1f, %d \x1b[0m\n", argv, grade.messageType, grade.threadID, grade.grade, grade.codeForFinalGrade);
 
         return currentStudentID;
 }

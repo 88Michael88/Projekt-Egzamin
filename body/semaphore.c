@@ -4,7 +4,7 @@
 #include <sys/ipc.h>
 #include <sys/sem.h>
 #include <sys/errno.h>
-#include "semaphore.h"
+#include "../headers/semaphore.h"
 
 #define IPC_RESULT_ERROR (-1)
 

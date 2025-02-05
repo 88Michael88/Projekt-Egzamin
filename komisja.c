@@ -4,16 +4,36 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <sys/ipc.h>
+#include <signal.h>
 #include "const.h"
 #include "error.h"
 #include "./headers/sharedMemory.h"
 #include "./headers/semaphore.h"
 
 void setupKomisje(char* type, char* numberOfStudents, int* memoryBlock);
+int semID;
+
+// Signal handler to set the flag when a signal is received
+void signalHandler(int sig) {
+    if (sig == SIGUSR2) {
+        destroyMemoryBlock(shm_KOMISJA);
+        destroySemaphore(semID, 0);
+    }
+}
 
 int main(int argc, char* argv[]) {
     (void)argc;
-    int semID = allocSemaphore(sem_KOMISJA, 1, IPC_CREAT | 0666);
+    // Set up the signal for the Dziekan to terminate the Komisja when it has finished.
+    if (signal(SIGUSR1, signalHandler) == SIG_ERR) {
+        perror(errors[SIGNAL_HANDLER]);
+    }
+
+    // Set up the signal for the Dziekan to terminate the Komisja when there is a fire.
+    if (signal(SIGUSR2, signalHandler) == SIG_ERR) {
+        perror(errors[SIGNAL_HANDLER]);
+    }
+
+    semID = allocSemaphore(sem_KOMISJA, 1, IPC_CREAT | 0666);
     initSemaphore(semID, 0, 0);
 
     // Create the shared memory with the Dziekanat so that you can pass the pid of KomisjaA and KomisjaB.

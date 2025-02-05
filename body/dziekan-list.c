@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "./headers/dziekan-list.h"
+#include "../headers/dziekan-list.h"
 
 int addStudentD(DziekanFinalGrade* head, int studentID) {
     DziekanFinalGrade* exists = head;
@@ -191,7 +191,7 @@ void statisticsFileD(DziekanFinalGrade* head, FILE* results) {
 int komisjaStatistics(DziekanFinalGrade* head, int komisjaID) { 
     int all = 0, passed = 0, failed = 0;
     DziekanFinalGrade* newStudent = head;
-    while(newStudent->next != NULL) {
+    while(newStudent != NULL) {
         all++;
         if (komisjaID == 1) { // Komisja A
             if (newStudent->finalA == 2.0) {

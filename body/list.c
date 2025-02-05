@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "./headers/list.h"
+#include "../headers/list.h"
 
 int addStudent(StudentGrade* head, int studentID) {
     StudentGrade* exits = head;

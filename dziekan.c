@@ -20,13 +20,14 @@
 int setupStudent(int* numberOfStudents, char** arg, int* studentPID);
 int setupKomisja(int* memoryBlock, char** arg, int* komisjaPID);
 void getTheFIFOData(char* FIFO_PATH, DziekanFinalGrade* dziekanFinalGrade, int komisja, int komisjaPID, int numberOfStudents, int interupt);
+int semID;
 
 void fire(int komisjaAPID, int komisjaBPID, int StudentPID, int KomisjaPID, int allStudents) {
     int* studentPIDMemoryBlock = attachMemoryBlock(shm_STUDENT_PID, allStudents);
 
     printf("FIRE!!!!\n");
-    kill(komisjaAPID, SIGUSR2);
     kill(StudentPID, SIGUSR2);
+    kill(komisjaAPID, SIGUSR2);
     kill(komisjaBPID, SIGUSR2);
     kill(KomisjaPID, SIGUSR2);
     for (int i = 0; i < allStudents; i++) {
@@ -36,7 +37,14 @@ void fire(int komisjaAPID, int komisjaBPID, int StudentPID, int KomisjaPID, int 
         if (kill(studentPIDMemoryBlock[i], SIGUSR2) == -1) {}
     }
 
-    detachMemoryBlock(studentPIDMemoryBlock);
+    destroyMemoryBlock(shm_STUDENT_PID);
+    destroyMemoryBlock(shm_FILENAME);
+    destroyMemoryBlock(shm_KOMISJA);
+
+    cleanupFIFO(fifo_PATH_B);
+    cleanupFIFO(fifo_PATH_A);
+
+    destroySemaphore(semID, 0);
 
     exit(0);
 }
@@ -61,7 +69,7 @@ int main() {
     }
 
     // Create and init the semaphere that will block the shared memory.
-    int semID = allocSemaphore(sem_FILENAME, 1, IPC_CREAT | IPC_EXCL | 0666);
+    semID = allocSemaphore(sem_FILENAME, 1, IPC_CREAT | IPC_EXCL | 0666);
     initSemaphore(semID, 0, 0);
 
     // Set up the student process and get its PID.
@@ -93,8 +101,8 @@ int main() {
     komisjaBPID = komisjaMemoryBlock[1];
 
     //if ((!(rand() % 20)) == 1) {
-    if (0) {
-        sleep(10); // Wait a little.
+    if (0) { // Change this to the line above if you want to have the possibility of a fire. 
+        sleep(10); // Wait a little, for the fire to start. :)
         fire(komisjaAPID, komisjaBPID, StudentPID, KomisjaPID, allStudents);
     }
 
@@ -112,7 +120,7 @@ int main() {
 
     // Wait for the semaphore to reach the correct number of students.
     int semCountAID = allocSemaphore(sem_COUNT_KOMISJA_A, 1, IPC_CREAT | 0666);
-    while (valueSemaphore(semCountAID, 0) != (numberOfStudents[studentFacultyIndex])) {}
+    while (valueSemaphore(semCountAID, 0) <= (numberOfStudents[studentFacultyIndex])) {}
 
     // Get the data from Komisja A.
     getTheFIFOData(fifo_PATH_A, dziekanFinalGrade, 1, komisjaAPID, numberOfStudents[studentFacultyIndex], 0);
@@ -121,22 +129,27 @@ int main() {
     
     // Wait for the semaphore to reach the correct number of students.
     int semCountBID = allocSemaphore(sem_COUNT_KOMISJA_B, 1, IPC_CREAT | 0666);
-    printf("semaphore value: %d, passed: %d\n", valueSemaphore(semCountBID, 0), passed);
     while (valueSemaphore(semCountBID, 0) <= (passed)) {}
 
     if (valueSemaphore(semCountBID, 0) == 1 && passed == 0) {
         kill(komisjaBPID, SIGUSR1); 
-        //break;
     }
 
-    if (!(valueSemaphore(semCountBID, 0) == 1 && passed == 0)) {
-        // Get the data from Komisja B.
+    // Get the data from Komisja B.
+    if (numberOfStudents[studentFacultyIndex] == passed) { // If all Uczens pass KomisjaA
+        getTheFIFOData(fifo_PATH_B, dziekanFinalGrade, 2, komisjaBPID, passed, 0);
+    } else if (!(valueSemaphore(semCountBID, 0) == 1 && passed == 0)) { // If there is a combination of passed and failed Uczens.
         getTheFIFOData(fifo_PATH_B, dziekanFinalGrade, 2, komisjaBPID, passed, 1);
+    } else { // If all Uczens don't pass KomisjaA
+        cleanupFIFO(fifo_PATH_B);
     }
 
     dziekanFinalGrade->calculateFinalGrades(dziekanFinalGrade);
     dziekanFinalGrade->statistics(dziekanFinalGrade);
     dziekanFinalGrade->printList(dziekanFinalGrade);
+    FILE* allGrades = fopen("result.txt", "w");
+    dziekanFinalGrade->printListFile(dziekanFinalGrade, allGrades);
+    dziekanFinalGrade->statisticsFile(dziekanFinalGrade, allGrades);
 
     wait(NULL);
     wait(NULL);

@@ -2,7 +2,7 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Wall -Wextra -Werror -std=c99 -I.
+CFLAGS = -Wall -Wextra -Werror -std=c99 -I -g
 
 # Source files
 SRCS = dziekan.c komisja.c student.c uczen.c komisjaT.c ./body/sharedMemory.c ./body/semaphore.c ./body/messageQueue.c ./body/list.c ./body/namedFIFO.c ./body/dziekan-list.c ./body/colorPrintf.c

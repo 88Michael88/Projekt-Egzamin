@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include "./headers/sharedMemory.h"
+#include "../headers/sharedMemory.h"
 
 #define IPC_RESULT_ERROR (-1)
 
