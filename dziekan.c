@@ -101,7 +101,7 @@ int main() {
     komisjaBPID = komisjaMemoryBlock[1];
 
     //if ((!(rand() % 20)) == 1) {
-    if (1) { // Change this to the line above if you want to have the possibility of a fire. 
+    if (0) { // Change this to the line above if you want to have the possibility of a fire. 
         sleep(10); // Wait a little, for the fire to start. :)
         fire(komisjaAPID, komisjaBPID, StudentPID, KomisjaPID, allStudents);
     }
