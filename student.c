@@ -18,6 +18,7 @@ void signalHandler(int sig) {
     if (sig == SIGUSR2) {
         exitSignal = 1;
     }
+    exit(0);
 }
 
 // The clear up function for the thread.
@@ -39,6 +40,9 @@ void* cleanUpStudents(void* numberOfStudents) {
 }
 
 int main(int argc, char* argv[]) {
+    if (signal(SIGUSR1, signalHandler) == SIG_ERR) {
+        perror(errors[SIGNAL_HANDLER]);
+    }
     int numberOfAllStudents = 0;
     // Allocate the needed array for the number of students in every faculty.
     int* numberOfStudents = malloc(sizeof(int) * SIZE_STUDENT_ARRAY);
