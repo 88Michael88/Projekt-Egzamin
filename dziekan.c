@@ -150,6 +150,7 @@ int main() {
     FILE* allGrades = fopen("result.txt", "w");
     dziekanFinalGrade->printListFile(dziekanFinalGrade, allGrades);
     dziekanFinalGrade->statisticsFile(dziekanFinalGrade, allGrades);
+    close(allGrades);
 
     wait(NULL);
     wait(NULL);
